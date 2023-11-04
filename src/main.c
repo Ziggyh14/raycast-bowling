@@ -14,7 +14,7 @@ int worldMap[10][20]=
   {1,0,1,0,0,0,0,0,0,1,4,4,4,4,4,4,4,4,4,4},
   {1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
   {1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
-  {1,0,0,0,0,-1,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
+  {1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
   {1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
   {1,1,0,0,0,0,0,0,0,1,4,4,4,4,4,4,4,4,4,1},
   {1,0,0,0,1,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0},
@@ -107,14 +107,16 @@ int main(){
     state.texture = SDL_CreateTexture(state.rend,SDL_PIXELFORMAT_ARGB8888,SDL_TEXTUREACCESS_STREAMING,
                                      SCREEN_WIDTH, SCREEN_HEIGHT);
 
-    size_t numOfTextures = 5;
+    size_t numOfTextures = 6;
     WallTexture textures[numOfTextures];
 
     load_texture("res/floor.png",&textures[0]);
-    load_texture("res/wallblank.png",&textures[1]);
-    load_texture("res/wallsign.png",&textures[2]);
-    load_texture("res/bowling.png",&textures[3]);
-    load_texture("res/wallgutter.png",&textures[4]);
+    load_texture("res/carpet.png",&textures[1]);
+    load_texture("res/wallblank.png",&textures[2]);
+    load_texture("res/wallsign.png",&textures[3]);
+    load_texture("res/bowling.png",&textures[4]);
+    load_texture("res/wallgutter.png",&textures[5]);
+    
 
     double posX = 5, posY = 5;  //x and y start position
     double dirX = -1,dirY = 0; //initial direction vector
@@ -183,11 +185,11 @@ int main(){
                 // floor
                 color = textures[0].pixels[textures[0].width * ty + tx];
                 //color = (color >> 1) & 8355711; // make a bit darker
-                state.pixels[(SCREEN_WIDTH*y)+x] = color;
+                state.pixels[SCREEN_WIDTH*y+x] = color;
 
                 //ceiling (symmetrical, at screenHeight - y - 1 instead of y)
-                color = textures[0].pixels[textures[0].width * ty + tx];
-                state.pixels[(SCREEN_HEIGHT* (SCREEN_HEIGHT - y - 1))+ x] = color;
+                color = textures[1].pixels[textures[1].width * ty + tx];
+                state.pixels[(SCREEN_WIDTH* (SCREEN_HEIGHT - y - 1))+ x] = color;
             }
         }
 
@@ -285,24 +287,19 @@ int main(){
             
             wallX -= floor((wallX));
 
-            int texX = (int)(wallX*(double)(textures[worldMap[mapX][mapY]].width));
-            if(side == 0 && rayDirX > 0) texX = textures[worldMap[mapX][mapY]].width - texX - 1;
-            if(side == 1 && rayDirY < 0) texX = textures[worldMap[mapX][mapY]].width - texX - 1;
+            int texX = (int)(wallX*(double)(textures[worldMap[mapX][mapY]+1].width));
+            if(side == 0 && rayDirX > 0) texX = textures[worldMap[mapX][mapY]+1].width - texX - 1;
+            if(side == 1 && rayDirY < 0) texX = textures[worldMap[mapX][mapY]+1].width - texX - 1;
 
             double step = 1.0 * TEXTURE_HEIGHT/lineHeight;
-
-            int mapval = worldMap[mapX][mapY];
-            if(mapval< 0){
-                mapval = 0;
-            }
 
             double texPos = (drawStart - SCREEN_HEIGHT / 2.0 + lineHeight / 2.0) * step;
             for(int y = drawStart; y<drawEnd; y++)
             {
                 // Cast the texture coordinate to integer, and mask with (texHeight - 1) in case of overflow
-                int texY = (int)texPos & (textures[worldMap[mapX][mapY]].height - 1);
+                int texY = (int)texPos & (textures[worldMap[mapX][mapY]+1].height - 1);
                 texPos += step;
-                Uint32 color = textures[worldMap[mapX][mapY]].pixels[textures[worldMap[mapX][mapY]].height * texY + texX];
+                Uint32 color = textures[worldMap[mapX][mapY]+1].pixels[textures[worldMap[mapX][mapY]+1].height * texY + texX];
                 //make color darker for y-sides: R, G and B byte each divided through two with a "shift" and an "and"
                 if(side == 1) color = (color >> 1) & 8355711;
                 state.pixels[(SCREEN_WIDTH *y)+x] = color;
