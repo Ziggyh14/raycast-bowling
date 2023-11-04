@@ -226,7 +226,7 @@ int main(){
             ry = sprites[i].pos.y - state.camera.pos.y;
             
             // (Euclidean) Distance from the camera
-            int distance = sqrt(pow(sprites[i].pos.y - state.camera.pos.y, 2) - pow(sprites[i].pos.x - state.camera.pos.x, 2));
+            int distance = sqrt(pow(ry, 2) - pow(rx, 2));
             
             // Skip sprites inside the camera, otherwise it'll crash due to dividing by 0
             if (distance == 0)
