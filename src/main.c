@@ -151,7 +151,6 @@ int main(){
             int cy = (SCREEN_HEIGHT / 2) - (height / 2);
             // Stretch it by 2x in both dimensions
             SDL_Rect destRect = (SDL_Rect) {cx, cy , width, height};
-            printf("(%i, %i, %i, %i)\n", destRect.x, destRect.y, destRect.w, destRect.h);
             SDL_RenderCopy(state.rend, sprites[i].texture, NULL, &destRect);
         }
         
