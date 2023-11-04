@@ -57,6 +57,7 @@ SDL_Keycode getKeyPressed(SDL_Event event){
 int main(){
     Sprite* sprites = NULL;
     size_t numOfSprites = 1;
+    int zbuffer[SCREEN_WIDTH];
 
     if(SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO)){
         printf("error initializing SDL: %s\n", SDL_GetError());
@@ -285,6 +286,9 @@ int main(){
             verline(x, drawStart, drawEnd,colour);
             //verline(x, drawEnd, SCREEN_HEIGHT - 1, 0xFF505050);
             */
+            
+            // Set the Z buffer for sprite casting
+            zbuffer[x] = perpWallDist;
         }
         //speed modifiers
 
@@ -358,8 +362,7 @@ int main(){
             // Loop through every vertical stripe of the sprite on screen
             for (int stripe = drawStartX; stripe < drawEndX; stripe++) {
                 double texX = ((stripe - (-spriteWidth / 2.0 + spriteScreenX)) * w / spriteWidth);
-                // Skipped ZBuffer (so we have x-ray)
-                if (transformY > 0 && stripe > 0 && stripe < SCREEN_WIDTH) {
+                if (transformY > 0 && stripe > 0 && stripe < SCREEN_WIDTH && zbuffer[stripe] >= transformY) {
                     SDL_Rect srcRect = {texX, texStartY, 1, texEndY - texStartY};
                     SDL_Rect destRect = {stripe, drawStartY, 1, drawEndY - drawStartY};
                     SDL_RenderCopy(state.rend, sprites[i].texture, &srcRect, &destRect);
