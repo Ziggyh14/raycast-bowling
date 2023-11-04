@@ -76,7 +76,12 @@ int main(){
     state.texture = SDL_CreateTexture(state.rend,SDL_PIXELFORMAT_ABGR8888,SDL_TEXTUREACCESS_STREAMING,
                                      SCREEN_WIDTH, SCREEN_HEIGHT);
 
-    blank = calloc((SCREEN_WIDTH * SCREEN_HEIGHT),sizeof(int));
+    ui32 tex[TEXTURE_WIDTH*TEXTURE_HEIGHT];
+    for(int x = 0; x<TEXTURE_WIDTH; x++){
+        for(int y = 0; y<TEXTURE_HEIGHT;y++){
+            tex[TEXTURE_WIDTH*y+x] = 65536 * 254 * (x != y && x != TEXTURE_WIDTH -y);
+        }
+    }
 
     double posX = 5, posY = 5;  //x and y start position
     double dirX = -1,dirY = 0; //initial direction vector
@@ -174,13 +179,40 @@ int main(){
             if(drawEnd >= SCREEN_HEIGHT)
                 drawEnd = SCREEN_HEIGHT - 1;
 
+            //new code for textures 
+            double wallX;
+            if(side == 0)
+                wallX = posY + perpWallDist * rayDirY;
+            else
+                wallX = posY +perpWallDist *rayDirX;
+            
+            wallX -= floor((wallX));
 
+            int texX = (int)(wallX*(double)(TEXTURE_WIDTH));
+            if(side == 0 && rayDirX > 0) texX = TEXTURE_WIDTH - texX - 1;
+            if(side == 1 && rayDirY < 0) texX = TEXTURE_WIDTH - texX - 1;
+
+            double step = 1.0 * TEXTURE_HEIGHT/lineHeight;
+
+            double texPos = (drawStart - SCREEN_HEIGHT / 2 + lineHeight / 2) * step;
+            for(int y = drawStart; y<drawEnd; y++)
+            {
+                // Cast the texture coordinate to integer, and mask with (texHeight - 1) in case of overflow
+                int texY = (int)texPos & (TEXTURE_HEIGHT - 1);
+                texPos += step;
+                Uint32 color = tex[TEXTURE_HEIGHT * texY + texX];
+                //make color darker for y-sides: R, G and B byte each divided through two with a "shift" and an "and"
+                if(side == 1) color = (color >> 1) & 8355711;
+                state.pixels[(SCREEN_WIDTH *y)+x] = color;
+            }
+            /*
             ui32 colour = 0x0000ff;
             if(side == 1)
                 colour = 0x0000B8;
             //verline(x, 0, drawStart, 0xFF202020);
             verline(x, drawStart, drawEnd,colour);
             //verline(x, drawEnd, SCREEN_HEIGHT - 1, 0xFF505050);
+            */
 
         }
         //speed modifiers

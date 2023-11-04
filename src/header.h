@@ -3,6 +3,8 @@
 
 #define SCREEN_WIDTH 640
 #define SCREEN_HEIGHT 420
+#define TEXTURE_WIDTH 64
+#define TEXTURE_HEIGHT 64
 
 
 typedef struct vector2 {
