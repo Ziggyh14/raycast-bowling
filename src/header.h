@@ -12,6 +12,5 @@ struct wall {
     ui32 y1;
     ui32 x2;
     ui32 y2;
-    ui32 sector;
-
+    
 } wall;

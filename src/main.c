@@ -22,6 +22,7 @@ int main(){
 
 
     while(1){
+        
         QUIT_CHECK;
 
     }
