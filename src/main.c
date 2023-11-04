@@ -5,6 +5,14 @@
 
 #define QUIT_CHECK if(SDL_QuitRequested()){break;}
 
+struct state{
+    SDL_Window* window;
+    SDL_Surface* surface;
+    SDL_Renderer* rend;
+    ui32* pixels;
+
+} state;
+
 int main(){
 
     if(SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO)){
@@ -22,7 +30,6 @@ int main(){
 
 
     while(1){
-        
         QUIT_CHECK;
 
     }
