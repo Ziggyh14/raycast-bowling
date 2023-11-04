@@ -79,12 +79,18 @@ int main(){
 
     ui32 tex[TEXTURE_WIDTH*TEXTURE_HEIGHT];
     ui32 texfloor[TEXTURE_WIDTH*TEXTURE_HEIGHT];
-    for(int x = 0; x<TEXTURE_WIDTH; x++){
+    /*for(int x = 0; x<TEXTURE_WIDTH; x++){
         for(int y = 0; y<TEXTURE_HEIGHT;y++){
             tex[TEXTURE_WIDTH*y+x] = 65536 * 254 * (x != y && x != TEXTURE_WIDTH -y);
             texfloor[TEXTURE_WIDTH*y+x] = 0xF3F084;
         }
-    }
+    }*/
+    SDL_Surface* floortex = IMG_Load("res/floor.png");
+    printf("%d\n",floortex->format->BytesPerPixel);
+    SDL_LockSurface(floortex);
+    memcpy(texfloor,floortex->pixels,(TEXTURE_WIDTH*TEXTURE_HEIGHT)*sizeof(ui32));
+    SDL_UnlockSurface(floortex);
+
 
     double posX = 5, posY = 5;  //x and y start position
     double dirX = -1,dirY = 0; //initial direction vector
@@ -157,7 +163,6 @@ int main(){
 
                 //ceiling (symmetrical, at screenHeight - y - 1 instead of y)
                 color = texfloor[TEXTURE_WIDTH * ty + tx];
-                color = (color >> 1) & 8355711; // make a bit darker
                 state.pixels[(SCREEN_HEIGHT* (SCREEN_HEIGHT - y - 1))+ x] = color;
             }
         }
