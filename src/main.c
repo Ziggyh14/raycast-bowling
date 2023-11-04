@@ -20,13 +20,15 @@ int main(){
         return 1;
         }
 
-    SDL_Window* w =  SDL_CreateWindow(
+    state.window =  SDL_CreateWindow(
             "game",
             SDL_WINDOWPOS_CENTERED_DISPLAY(0),
             SDL_WINDOWPOS_CENTERED_DISPLAY(0),
             1280,
             720,
             SDL_WINDOW_ALLOW_HIGHDPI);
+        
+    state.rend = SDL_CreateRenderer(state.window,-1,SDL_RENDERER_PRESENTVSYNC);
 
 
     while(1){
