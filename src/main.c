@@ -74,14 +74,21 @@ int main(){
         
     state.rend = SDL_CreateRenderer(state.window,-1,SDL_RENDERER_PRESENTVSYNC );
 
-    state.texture = SDL_CreateTexture(state.rend,SDL_PIXELFORMAT_ABGR8888,SDL_TEXTUREACCESS_STREAMING,
+    state.texture = SDL_CreateTexture(state.rend,SDL_PIXELFORMAT_ARGB8888,SDL_TEXTUREACCESS_STREAMING,
                                      SCREEN_WIDTH, SCREEN_HEIGHT);
 
-    blank = calloc((SCREEN_WIDTH * SCREEN_HEIGHT),sizeof(int));
+    ui32 tex[TEXTURE_WIDTH*TEXTURE_HEIGHT];
+    ui32 texfloor[TEXTURE_WIDTH*TEXTURE_HEIGHT];
+    for(int x = 0; x<TEXTURE_WIDTH; x++){
+        for(int y = 0; y<TEXTURE_HEIGHT;y++){
+            tex[TEXTURE_WIDTH*y+x] = 65536 * 254 * (x != y && x != TEXTURE_WIDTH -y);
+            texfloor[TEXTURE_WIDTH*y+x] = 0xF3F084;
+        }
+    }
 
     double posX = 5, posY = 5;  //x and y start position
     double dirX = -1,dirY = 0; //initial direction vector
-    double planeX = 0, planeY = 0.66; //the 2d raycaster version of camera plane
+    double planeX = 0, planeY = 0.8 ;//the 2d raycaster version of camera plane
 
     double time = 0; //time of current frame
     double oldTime = 0; //time of previous frame
@@ -100,11 +107,66 @@ int main(){
 
         QUIT_CHECK;
 
-        for(int x = 0; x < SCREEN_WIDTH; x++)
+        //FLOOR loop
+        for(int y = 0; y<SCREEN_HEIGHT;y++){
+
+            // rayDir for leftmost ray (x = 0) and rightmost ray (x = w)
+            float rayDirX0 = dirX - planeX;
+            float rayDirY0 = dirY - planeY;
+            float rayDirX1 = dirX + planeX;
+            float rayDirY1 = dirY + planeY;
+
+            // horizon
+            int p = y -SCREEN_HEIGHT /2;
+            //vert pos of camera
+            float posZ = 0.5 *SCREEN_HEIGHT;
+
+            //Horzontal distance from the camera to the floor
+            float rowDistance = posZ / p;
+            // calculate the real world step vector we have to add for each x (parallel to camera plane)
+            // adding step by step avoids multiplications with a weight in the inner loop
+            float floorStepX = rowDistance * (rayDirX1 - rayDirX0) / SCREEN_WIDTH;
+            float floorStepY = rowDistance * (rayDirY1 - rayDirY0) / SCREEN_WIDTH;
+
+                    // real world coordinates of the leftmost column. This will be updated as we step to the right.
+            float floorX = posX + rowDistance * rayDirX0;
+            float floorY = posY + rowDistance * rayDirY0;
+
+            for(int x = 0; x < SCREEN_WIDTH; ++x)
+            {
+                // the cell coord is simply got from the integer parts of floorX and floorY
+                int cellX = (int)(floorX);
+                int cellY = (int)(floorY);
+
+                // get the texture coordinate from the fractional part
+                int tx = (int)(TEXTURE_WIDTH * (floorX - cellX)) & (TEXTURE_WIDTH - 1);
+                int ty = (int)(TEXTURE_HEIGHT * (floorY - cellY)) & (TEXTURE_HEIGHT - 1);
+
+                floorX += floorStepX;
+                floorY += floorStepY;
+
+                // choose texture and draw the pixel
+                //int floorTexture = 3;
+                //int ceilingTexture = 6;
+                Uint32 color;
+
+                // floor
+                color = texfloor[TEXTURE_WIDTH * ty + tx];
+                color = (color >> 1) & 8355711; // make a bit darker
+                state.pixels[(SCREEN_WIDTH*y)+x] = color;
+
+                //ceiling (symmetrical, at screenHeight - y - 1 instead of y)
+                color = texfloor[TEXTURE_WIDTH * ty + tx];
+                color = (color >> 1) & 8355711; // make a bit darker
+                state.pixels[(SCREEN_HEIGHT* (SCREEN_HEIGHT - y - 1))+ x] = color;
+            }
+        }
+
+        for(int x = 0; x < SCREEN_WIDTH; x++)  
         {
-            double cameraX = 2 * x / (double) (SCREEN_WIDTH - 1); //x-coordinate in camera space
-            double rayDirX = dirX + planeX * cameraX;
-            double rayDirY = dirY + planeY * cameraX;
+            double cameraX = (2 * x / (double) (SCREEN_WIDTH - 1))-0.66; //x-coordinate in camera space
+            double rayDirX = (dirX + planeX * cameraX) ;
+            double rayDirY = (dirY + planeY * cameraX) ;
 
             //which box of the map we're in
             int mapX = (int) posX;
@@ -173,7 +235,7 @@ int main(){
                 perpWallDist = (sideDistY - deltaDistY);
             }
 
-                  //Calculate height of line to draw on screen
+            //Calculate height of line to draw on screen
             int lineHeight = (int)( SCREEN_HEIGHT/ perpWallDist);
 
             //calculate lowest and highest pixel to fill in current stripe
@@ -184,14 +246,40 @@ int main(){
             if(drawEnd >= SCREEN_HEIGHT)
                 drawEnd = SCREEN_HEIGHT - 1;
 
+            //new code for textures 
+            double wallX;
+            if(side == 0)
+                wallX = posY + perpWallDist * rayDirY;
+            else
+                wallX = posY +perpWallDist *rayDirX;
+            
+            wallX -= floor((wallX));
 
+            int texX = (int)(wallX*(double)(TEXTURE_WIDTH));
+            if(side == 0 && rayDirX > 0) texX = TEXTURE_WIDTH - texX - 1;
+            if(side == 1 && rayDirY < 0) texX = TEXTURE_WIDTH - texX - 1;
+
+            double step = 1.0 * TEXTURE_HEIGHT/lineHeight;
+
+            double texPos = (drawStart - SCREEN_HEIGHT / 2 + lineHeight / 2) * step;
+            for(int y = drawStart; y<drawEnd; y++)
+            {
+                // Cast the texture coordinate to integer, and mask with (texHeight - 1) in case of overflow
+                int texY = (int)texPos & (TEXTURE_HEIGHT - 1);
+                texPos += step;
+                Uint32 color = tex[TEXTURE_HEIGHT * texY + texX];
+                //make color darker for y-sides: R, G and B byte each divided through two with a "shift" and an "and"
+                if(side == 1) color = (color >> 1) & 8355711;
+                state.pixels[(SCREEN_WIDTH *y)+x] = color;
+            }
+            /*
             ui32 colour = 0x0000ff;
             if(side == 1)
                 colour = 0x0000B8;
             //verline(x, 0, drawStart, 0xFF202020);
             verline(x, drawStart, drawEnd,colour);
             //verline(x, drawEnd, SCREEN_HEIGHT - 1, 0xFF505050);
-
+            */
         }
         //speed modifiers
 
@@ -199,8 +287,8 @@ int main(){
         time = SDL_GetTicks();
         double frameTime = (time - oldTime) / 1000.0; //frameTime is the time this frame has taken, in seconds
     //speed modifiers
-        double moveSpeed = frameTime * 5.0; //the constant value is in squares/second
-        double rotSpeed = frameTime * 3.0; //the constant value is in radians/second
+        double moveSpeed = frameTime * 10.0; //the constant value is in squares/second
+        double rotSpeed = frameTime * 6.0; //the constant value is in radians/second
        
         int texture_pitch = 0;
         void* texture_pixels = NULL;
@@ -285,8 +373,9 @@ int main(){
             QUIT_CHECK
             if(isKeyDown(e)){
                 if(getKeyPressed(e) == SDLK_UP){
-                    if(worldMap[(int)(posX + dirX * moveSpeed)][(int)posY] == 0) posX += dirX * moveSpeed;
-                    if(worldMap[(int) posX][(int)(posY + dirY * moveSpeed)] == 0) posY += dirY * moveSpeed;
+                    printf("(%f,%f)\n",dirX,dirY);
+                    if(worldMap[(int)(posX + dirX * moveSpeed)][(int)posY] == 0) posX += (dirX * moveSpeed);
+                    if(worldMap[(int) posX][(int)(posY + dirY * moveSpeed)] == 0) posY += (dirY * moveSpeed);
                 }
                 if(getKeyPressed(e) == SDLK_RIGHT){
                     //both camera direction and camera plane must be rotated
@@ -308,7 +397,7 @@ int main(){
                 }
                 if(getKeyPressed(e) == SDLK_DOWN){
                     if(worldMap[(int)(posX - dirX * moveSpeed)][(int)(posY)] == 0) posX -= dirX * moveSpeed;
-                    if(worldMap[(int)(posX)][(int)(posY - dirY * moveSpeed)] == 1) posY -= dirY * moveSpeed;
+                    if(worldMap[(int)(posX)][(int)(posY - dirY * moveSpeed)] == 0) posY -= dirY * moveSpeed;
                 }
             }   
         }
