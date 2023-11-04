@@ -10,6 +10,7 @@ SDLLIBD = $(LIBD)/SDL
 INCFLAGS = -lSDL2
 OUT = $(BIN)/out
 SRC := $(wildcard $(SRC_DIR)/*.c)
+HEADERS := $(wildcard $(SRC_DIR)/*.h)
 OBJ := $(SRC:$(SRC_DIR)/%.c=$(OBJ_DIR)/%.o)
 BIN = bin
 
@@ -18,5 +19,8 @@ all: $(OUT)
 $(OUT): $(OBJ) | $(BIN_DIR)
 	$(CC) $(CFLAGS) $^ -o bin/out $(INCFLAGS)
 
-$(OBJ_DIR)/%.o: $(SRC_DIR)/%.c | $(OBJ_DIR)
+$(OBJ_DIR)/%.o: $(SRC_DIR)/%.c $(HEADERS) | $(OBJ_DIR)
 	$(CC) $(CFLAGS) -c $< -o $@ $(INCFLAGS)
+
+clean:
+	rm obj/* bin/*
