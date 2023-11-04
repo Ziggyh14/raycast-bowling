@@ -52,6 +52,10 @@ SDL_Keycode getKeyPressed(SDL_Event event){
     return event.key.keysym.sym;
 }
 
+double spriteDistance(Sprite s, double x, double y) {
+    return sqrt(pow(s.pos.x - x, 2) + pow(s.pos.y - y, 2));
+}
+
 void load_texture(const char* file, WallTexture* dest){
     SDL_Surface* s = IMG_Load(file);
     if (s == NULL) {
@@ -81,7 +85,7 @@ void load_texture(const char* file, WallTexture* dest){
 
 int main(){
     Sprite* sprites = NULL;
-    size_t numOfSprites = 1;
+    size_t numOfSprites = 11;
     int zbuffer[SCREEN_WIDTH];
 
     if(SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO)){
@@ -121,9 +125,9 @@ int main(){
     sprites = malloc(numOfSprites * sizeof(Sprite));
     // Initialise sprites
     for(int i = 0; i < numOfSprites; i++) {
-        sprites[i].pos = (vector2) {4, 5};
+        sprites[i].pos = (fvec2) {4.0 - i / 10.0, 5.0};
         sprites[i].angle = 0;
-        char* imageFilePath = "res/ball.png";
+        char* imageFilePath = i == 0 ? "res/ball.png" : "res/pin.png";
         sprites[i].texture = IMG_LoadTexture(state.rend, imageFilePath);
     }
     
@@ -330,6 +334,30 @@ int main(){
         // render on screen
         SDL_RenderCopy(state.rend, state.texture, NULL, NULL);
         
+        // Reorder sprites in order of furthest to closest to the camera
+        double spriteDists[numOfSprites];
+        for(int i = 0; i < numOfSprites; i++) {
+            spriteDists[i] = spriteDistance(sprites[i], posX, posY);
+        }
+        
+        // Bubble sort the sprites
+        int swapped = 1;
+        while (swapped) {
+            int numLeft = numOfSprites;
+            swapped = 0;
+            for (int x = 1; x < numLeft; x++) {
+                if (spriteDists[x-1] <= spriteDists[x]) {
+                    double tmpDist = spriteDists[x-1];
+                    Sprite tmpSprite = sprites[x-1];
+                    spriteDists[x-1] = spriteDists[x];
+                    sprites[x-1] = sprites[x];
+                    spriteDists[x] = tmpDist;
+                    sprites[x] = tmpSprite;
+                }
+            }
+            numLeft--;
+        }
+        
         // Render sprites
         for (int i = 0; i < numOfSprites; i++) {
             int w, h;
@@ -372,7 +400,7 @@ int main(){
             }
             
             // Calculate width of the sprite
-            int spriteWidth = fabs( SCREEN_HEIGHT / transformY);
+            int spriteWidth = fabs( SCREEN_HEIGHT / transformY) * ((double) w / h /* account for aspect ratio not being square */);
             int drawStartX = -spriteWidth / 2 + spriteScreenX;
             if (drawStartX < 0) drawStartX = 0;
             int drawEndX = spriteWidth / 2 + spriteScreenX;
