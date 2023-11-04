@@ -20,6 +20,11 @@ typedef struct vector2 {
     ui32 y;
 } vector2;
 
+typedef struct fvec2 {
+    double x;
+    double y;
+} fvec2;
+
 typedef struct Wall {
     vector2 w1;
     vector2 w2;
@@ -33,7 +38,7 @@ typedef struct WallTexture {
 } WallTexture;
 
 typedef struct Sprite {
-    vector2 pos;
+    fvec2 pos;
     // Used for changing the texture based on where it's facing (not yet implemented)
     float angle;
     SDL_Texture* texture;
