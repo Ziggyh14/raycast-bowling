@@ -290,7 +290,7 @@ int main(){
             verline(x, drawStart, drawEnd,colour);
             //verline(x, drawEnd, SCREEN_HEIGHT - 1, 0xFF505050);
             */
-            
+
             // Set the Z buffer for sprite casting
             zbuffer[x] = perpWallDist;
         }
