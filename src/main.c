@@ -9,7 +9,8 @@ struct state{
     SDL_Window* window;
     SDL_Surface* surface;
     SDL_Renderer* rend;
-    ui32* pixels;
+    SDL_Texture* texture;
+    ui32 pixels[SCREEN_WIDTH *SCREEN_HEIGHT];
 
 } state;
 
@@ -24,11 +25,16 @@ int main(){
             "game",
             SDL_WINDOWPOS_CENTERED_DISPLAY(0),
             SDL_WINDOWPOS_CENTERED_DISPLAY(0),
-            1280,
-            720,
+            SCREEN_WIDTH,
+            SCREEN_HEIGHT,
             SDL_WINDOW_ALLOW_HIGHDPI);
         
     state.rend = SDL_CreateRenderer(state.window,-1,SDL_RENDERER_PRESENTVSYNC);
+
+    state.texture = SDL_CreateTexture(state.rend,SDL_PIXELFORMAT_ABGR32,SDL_TEXTUREACCESS_STREAMING,
+                                     SCREEN_WIDTH, SCREEN_HEIGHT);
+
+    
 
 
     while(1){

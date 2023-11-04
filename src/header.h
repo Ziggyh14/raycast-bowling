@@ -1,6 +1,9 @@
 
 #define ui32 __uint32_t
 
+#define SCREEN_WIDTH 384
+#define SCREEN_HEIGHT 216
+
 
 typedef struct vector2 {
     ui32 x;
@@ -12,5 +15,5 @@ struct wall {
     ui32 y1;
     ui32 x2;
     ui32 y2;
-    
+
 } wall;
