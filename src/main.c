@@ -105,8 +105,8 @@ int main(){
             double sideDistY;
 
             //length of ray from one x or y-side to next x or y-side
-            double deltaDistX = (rayDirX == 0) ? 1e30 : abs(1 / rayDirX);
-            double deltaDistY = (rayDirY == 0) ? 1e30 : abs(1 / rayDirY);
+            double deltaDistX = (rayDirX == 0) ? 1e30 : fabs(1 / rayDirX);
+            double deltaDistY = (rayDirY == 0) ? 1e30 : fabs(1 / rayDirY);
             double perpWallDist;
 
             //what direction to step in x or y-direction (either +1 or -1)
