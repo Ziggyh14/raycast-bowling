@@ -1,3 +1,4 @@
+#include <SDL2/SDL_keyboard.h>
 #include <SDL2/SDL_render.h>
 #include <SDL2/SDL_surface.h>
 #include <SDL2/SDL_image.h>
@@ -136,8 +137,17 @@ int main(){
     
 
     while(1){
-
         QUIT_CHECK;
+        time = SDL_GetTicks();
+        // Wait until the 2nd frame to slow down
+        if (oldTime != 0) {
+            double minFrameTime = 1000.0 / 60.0; /* 60 fps */
+            double delta = time - oldTime;
+            double timeToPass = minFrameTime - delta;
+            if (timeToPass > 0) {
+                SDL_Delay(timeToPass);
+            }
+        }
 
         //FLOOR loop
         for(int y = 0; y<SCREEN_HEIGHT;y++){
@@ -426,36 +436,36 @@ int main(){
         SDL_Event e;
         while(SDL_PollEvent(&e)){
             QUIT_CHECK
-            if(isKeyDown(e)){
-                if(getKeyPressed(e) == SDLK_UP){
-                    printf("(%f,%f)\n",dirX,dirY);
-                    if(worldMap[(int)(posX + dirX * moveSpeed)][(int)posY] == 0) posX += (dirX * moveSpeed);
-                    if(worldMap[(int) posX][(int)(posY + dirY * moveSpeed)] == 0) posY += (dirY * moveSpeed);
-                }
-                if(getKeyPressed(e) == SDLK_RIGHT){
-                    //both camera direction and camera plane must be rotated
-                    double oldDirX = dirX;
-                    dirX = dirX * cos(-rotSpeed) - dirY * sin(-rotSpeed);
-                    dirY = oldDirX * sin(-rotSpeed) + dirY * cos(-rotSpeed);
-                    double oldPlaneX = planeX;
-                    planeX = planeX * cos(-rotSpeed) - planeY * sin(-rotSpeed);
-                    planeY = oldPlaneX * sin(-rotSpeed) + planeY * cos(-rotSpeed);
-                }
-                if(getKeyPressed(e) == SDLK_LEFT){
-        
-                    double oldDirX = dirX;
-                    dirX = dirX * cos(rotSpeed) - dirY * sin(rotSpeed);
-                    dirY = oldDirX * sin(rotSpeed) + dirY * cos(rotSpeed);
-                    double oldPlaneX = planeX;
-                    planeX = planeX * cos(rotSpeed) - planeY * sin(rotSpeed);
-                    planeY = oldPlaneX * sin(rotSpeed) + planeY * cos(rotSpeed);
-                }
-                if(getKeyPressed(e) == SDLK_DOWN){
-                    if(worldMap[(int)(posX - dirX * moveSpeed)][(int)(posY)] == 0) posX -= dirX * moveSpeed;
-                    if(worldMap[(int)(posX)][(int)(posY - dirY * moveSpeed)] == 0) posY -= dirY * moveSpeed;
-                }
-            }   
         }
+        const Uint8* keys;
+        keys = SDL_GetKeyboardState(NULL);
+        if(keys[SDL_SCANCODE_UP]){
+            if(worldMap[(int)(posX + dirX * moveSpeed)][(int)posY] == 0) posX += (dirX * moveSpeed);
+            if(worldMap[(int) posX][(int)(posY + dirY * moveSpeed)] == 0) posY += (dirY * moveSpeed);
+        }
+        if(keys[SDL_SCANCODE_RIGHT]){
+            //both camera direction and camera plane must be rotated
+            double oldDirX = dirX;
+            dirX = dirX * cos(-rotSpeed) - dirY * sin(-rotSpeed);
+            dirY = oldDirX * sin(-rotSpeed) + dirY * cos(-rotSpeed);
+            double oldPlaneX = planeX;
+            planeX = planeX * cos(-rotSpeed) - planeY * sin(-rotSpeed);
+            planeY = oldPlaneX * sin(-rotSpeed) + planeY * cos(-rotSpeed);
+        }
+        if(keys[SDL_SCANCODE_LEFT]){
+            double oldDirX = dirX;
+            dirX = dirX * cos(rotSpeed) - dirY * sin(rotSpeed);
+            dirY = oldDirX * sin(rotSpeed) + dirY * cos(rotSpeed);
+            double oldPlaneX = planeX;
+            planeX = planeX * cos(rotSpeed) - planeY * sin(rotSpeed);
+            planeY = oldPlaneX * sin(rotSpeed) + planeY * cos(rotSpeed);
+        }
+        if(keys[SDL_SCANCODE_DOWN]){
+            if(worldMap[(int)(posX - dirX * moveSpeed)][(int)(posY)] == 0) posX -= dirX * moveSpeed;
+            if(worldMap[(int)(posX)][(int)(posY - dirY * moveSpeed)] == 0) posY -= dirY * moveSpeed;
+        }
+        
+        oldTime = time;
     }
     
     // Free up sprites
