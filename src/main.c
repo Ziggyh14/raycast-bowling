@@ -234,7 +234,7 @@ int main(){
             
             // Calculate x position of sprite based on angle difference
             // Angles in radians (makes maths easier)
-            double spriteAngle = asin((double) ry / distance);
+            double spriteAngle = asin((double) distance / ry);
             double angleDiff = spriteAngle - state.camera.angle;
             
             // Screen X position of the sprite
