@@ -32,7 +32,7 @@ void verline(int x, int y1, int y2,ui32 color){
 vector2 intersect(float raya, Wall wall){
 
     vector2 v;
-    ui32 b1 = (state.camera.pos.x - wall.x1)*(wall.slope*(state.camera.pos.y - wall.y1);
+    ui32 b1 = (state.camera.pos.x - wall.x1)*(wall.slope*(state.camera.pos.y - wall.y1));
     //x  = b1 / (m2 - m1)
     //y  = w.y1 + (x - w.x1) * m1
     v.x = b1/(tan(raya) - wall.slope);
@@ -69,11 +69,12 @@ int main(){
     state.camera.pos.x = 0;
     state.camera.pos.y = 0;
 
-   
+    Wall w = {0,10,10,5,0};
+    w.slope =  (w.y2 -w.y1) / (w.x2 - w.x1);
 
+    vector2 v = intersect(90,w);
 
-
-
+    printf("(%d,%d)\n",v.x,v.y);
 
 
     int texture_pitch = 0;

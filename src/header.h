@@ -15,6 +15,6 @@ typedef struct Wall {
     ui32 y1;
     ui32 x2;
     ui32 y2;
-    float slope = (y2 -y1) / (x2 - x1);
+    float slope;
 
 } Wall;

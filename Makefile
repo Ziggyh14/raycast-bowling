@@ -3,11 +3,11 @@ CC := gcc
 SRC_DIR = src
 OBJ_DIR = obj
 
-CFLAGS = -std=c11 -Wall -g
+CFLAGS = -std=c11 -Wall -g 
 
 LIBD = lib
 SDLLIBD = $(LIBD)/SDL
-INCFLAGS = -lSDL2
+INCFLAGS = -lSDL2 -lm
 OUT = $(BIN)/out
 SRC := $(wildcard $(SRC_DIR)/*.c)
 HEADERS := $(wildcard $(SRC_DIR)/*.h)
