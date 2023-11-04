@@ -256,27 +256,15 @@ int main(){
             if (drawEndX >= SCREEN_WIDTH) drawEndX = SCREEN_WIDTH - 1;
             
             // Loop through every vertical stripe of the sprite on screen
-            /*SDL_Rect srcRect = {0, 0, w, h};
-            SDL_Rect destRect = {drawStartX, drawStartY, spriteHeight, drawEndY - drawStartY};
-            SDL_RenderCopy(state.rend, sprites[i].texture, &srcRect, &destRect);*/
-            //printf("Printing x=%i..%i: ", drawStartX, drawEndX);
             for (int stripe = drawStartX; stripe < drawEndX; stripe++) {
-                double texX = (1 * (stripe - (-spriteWidth / 2 + spriteScreenX)) * w / spriteWidth);
-                //double texX = stripe - (spriteScreenX -((double) spriteWidth / 2)) * w / spriteWidth; //BUGGY LINE
+                double texX = ((stripe - (-spriteWidth / 2 + spriteScreenX)) * w / spriteWidth);
                 // Skipped ZBuffer (so we have x-ray)
-                //printf("%i", transformY > 0);
                 if (transformY > 0 && stripe > 0 && stripe < SCREEN_WIDTH) {
                     SDL_Rect srcRect = {texX, 0, 1, h};
-                    printf("From %f to %i\n", texX, stripe);
                     SDL_Rect destRect = {stripe, drawStartY, 1, drawEndY - drawStartY};
                     SDL_RenderCopy(state.rend, sprites[i].texture, &srcRect, &destRect);
                 }
             }
-            //printf("\n");
-            
-            
-            //SDL_Rect destRect = (SDL_Rect) {spriteScreenX, cy, spriteHeight /*square*/, spriteHeight};
-            //SDL_RenderCopy(state.rend, sprites[i].texture, NULL, &destRect);
         }
         
         SDL_RenderPresent(state.rend);
