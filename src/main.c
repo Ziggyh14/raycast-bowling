@@ -73,13 +73,15 @@ int main(){
         
     state.rend = SDL_CreateRenderer(state.window,-1,SDL_RENDERER_PRESENTVSYNC );
 
-    state.texture = SDL_CreateTexture(state.rend,SDL_PIXELFORMAT_ABGR8888,SDL_TEXTUREACCESS_STREAMING,
+    state.texture = SDL_CreateTexture(state.rend,SDL_PIXELFORMAT_ARGB8888,SDL_TEXTUREACCESS_STREAMING,
                                      SCREEN_WIDTH, SCREEN_HEIGHT);
 
     ui32 tex[TEXTURE_WIDTH*TEXTURE_HEIGHT];
+    ui32 texfloor[TEXTURE_WIDTH*TEXTURE_HEIGHT];
     for(int x = 0; x<TEXTURE_WIDTH; x++){
         for(int y = 0; y<TEXTURE_HEIGHT;y++){
             tex[TEXTURE_WIDTH*y+x] = 65536 * 254 * (x != y && x != TEXTURE_WIDTH -y);
+            texfloor[TEXTURE_WIDTH*y+x] = 0xF3F084;
         }
     }
 
@@ -94,7 +96,7 @@ int main(){
     while(1){
 
         QUIT_CHECK;
-/*
+
         //FLOOR loop
         for(int y = 0; y<SCREEN_HEIGHT;y++){
 
@@ -109,11 +111,47 @@ int main(){
             //vert pos of camera
             float posZ = 0.5 *SCREEN_HEIGHT;
 
-            //Horzontal distance from the camer to the floor
+            //Horzontal distance from the camera to the floor
+            float rowDistance = posZ / p;
+            // calculate the real world step vector we have to add for each x (parallel to camera plane)
+            // adding step by step avoids multiplications with a weight in the inner loop
+            float floorStepX = rowDistance * (rayDirX1 - rayDirX0) / SCREEN_WIDTH;
+            float floorStepY = rowDistance * (rayDirY1 - rayDirY0) / SCREEN_WIDTH;
 
+                    // real world coordinates of the leftmost column. This will be updated as we step to the right.
+            float floorX = posX + rowDistance * rayDirX0;
+            float floorY = posY + rowDistance * rayDirY0;
 
+            for(int x = 0; x < SCREEN_WIDTH; ++x)
+            {
+                // the cell coord is simply got from the integer parts of floorX and floorY
+                int cellX = (int)(floorX);
+                int cellY = (int)(floorY);
+
+                // get the texture coordinate from the fractional part
+                int tx = (int)(TEXTURE_WIDTH * (floorX - cellX)) & (TEXTURE_WIDTH - 1);
+                int ty = (int)(TEXTURE_HEIGHT * (floorY - cellY)) & (TEXTURE_HEIGHT - 1);
+
+                floorX += floorStepX;
+                floorY += floorStepY;
+
+                // choose texture and draw the pixel
+                //int floorTexture = 3;
+                //int ceilingTexture = 6;
+                Uint32 color;
+
+                // floor
+                color = texfloor[TEXTURE_WIDTH * ty + tx];
+                color = (color >> 1) & 8355711; // make a bit darker
+                state.pixels[(SCREEN_WIDTH*y)+x] = color;
+
+                //ceiling (symmetrical, at screenHeight - y - 1 instead of y)
+                color = texfloor[TEXTURE_WIDTH * ty + tx];
+                color = (color >> 1) & 8355711; // make a bit darker
+                state.pixels[(SCREEN_HEIGHT* (SCREEN_HEIGHT - y - 1))+ x] = color;
+            }
         }
-*/
+
         for(int x = 0; x < SCREEN_WIDTH; x++)
         {
             double cameraX = 2 * x / (double) (SCREEN_WIDTH - 1); //x-coordinate in camera space
