@@ -29,19 +29,24 @@ void verline(int x, int y1, int y2,ui32 color){
     }
 }
 
-vector2 intersect(float raya, Wall wall){
+vector2 intersect_segs(vector2 w0, vector2 w1, vector2 r0, vector2 r1) {
+    float d =
+        ((w0.x - w1.x) * (r0.y - r1.y))
+            - ((w0.y - w1.y) * (r0.x - r1.x));
 
-    vector2 v;
-    ui32 b1 = (state.camera.pos.x - wall.x1)*(wall.slope*(state.camera.pos.y - wall.y1));
-    //x  = b1 / (m2 - m1)
-    //y  = w.y1 + (x - w.x1) * m1
-    v.x = b1/(tan(raya) - wall.slope);
-    v.y = wall.y1 + ((v.x - wall.x1) * wall.slope);
+    if (fabsf(d) < 0.000001f) { return (vector2) { NAN, NAN }; }
 
-    return v;
+    float 
+        t = (((w0.x - r0.x) * (r0.y - r1.y))
+                - ((w0.y - r0.y) * (r0.x - r1.x))) / d,
+        u = (((w0.x - r0.x) * (w0.y - w1.y))
+                - ((w0.y - r0.y) * (w0.x - w1.x))) / d;
+    return (t >= 0 && t <= 1 && u >= 0 && u <= 1) ?
+        ((vector2) {
+            w0.x + (t * (w1.x - w0.x)),
+            w0.y + (t * (w1.y - w0.y)) })
+        : ((vector2) { NAN, NAN });
 }
-
-
 
 int main(){
 
@@ -69,13 +74,14 @@ int main(){
     state.camera.pos.x = 0;
     state.camera.pos.y = 0;
 
-    Wall w = {0,10,10,5,0};
-    w.slope =  (w.y2 -w.y1) / (w.x2 - w.x1);
+  double dirX = -1, dirY = 0; //initial direction vector
+  double planeX = 0, planeY = 0.66; //the 2d raycaster version of camera plane
 
-    vector2 v = intersect(90,w);
+    Wall w = {{0,10},{10,11}};
+    
+    vector2 v = intersect_segs(w.w1,w.w2,(vector2){0,0},(vector2){500,1000});
 
     printf("(%d,%d)\n",v.x,v.y);
-
 
     int texture_pitch = 0;
     void* texture_pixels = NULL;
@@ -86,8 +92,6 @@ int main(){
         memcpy(texture_pixels, state.pixels, texture_pitch * SCREEN_HEIGHT);
     }
     SDL_UnlockTexture(state.texture);
-
-    
 
 
     while(1){
