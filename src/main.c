@@ -114,7 +114,7 @@ int main(){
     load_texture("res/wallblank.png",&textures[1]);
     load_texture("res/wallsign.png",&textures[2]);
     load_texture("res/bowling.png",&textures[3]);
-    load_texture("res/wallgutter",&textures);
+    load_texture("res/wallgutter.png",&textures[4]);
 
     double posX = 5, posY = 5;  //x and y start position
     double dirX = -1,dirY = 0; //initial direction vector
