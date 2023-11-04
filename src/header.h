@@ -4,11 +4,16 @@
 #include <SDL2/SDL.h>
 #define ui32 __uint32_t
 
+<<<<<<< HEAD
 #define SCREEN_WIDTH  640 //1020
 #define SCREEN_HEIGHT 420 // 720
 #define TEXTURE_WIDTH 64
 #define TEXTURE_HEIGHT 64
 
+=======
+#define SCREEN_WIDTH 640
+#define SCREEN_HEIGHT 420
+>>>>>>> 89749c23f3d4f8a1969636adb147bc1ede639175
 
 typedef struct vector2 {
     ui32 x;
@@ -20,6 +25,12 @@ typedef struct Wall {
     vector2 w2;
 
 } Wall;
+
+typedef struct WallTexture {
+    size_t width;
+    size_t height;
+    ui32* pixels;
+} WallTexture;
 
 typedef struct Sprite {
     vector2 pos;
