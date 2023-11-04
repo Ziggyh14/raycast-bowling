@@ -12,7 +12,7 @@ int worldMap[10][10]=
   {1,0,0,0,0,0,1,0,0,1},
   {1,0,1,0,0,0,0,0,0,1},
   {1,0,0,0,0,0,0,0,0,1},
-  {1,0,0,0,1,0,0,0,0,1},
+  {1,0,0,0,0,0,0,0,0,1},
   {1,0,0,0,0,0,0,0,0,1},
   {1,0,0,0,0,0,0,1,0,1},
   {1,1,0,0,0,0,0,0,0,1},
@@ -87,7 +87,7 @@ int main(){
 
     double posX = 5, posY = 5;  //x and y start position
     double dirX = -1,dirY = 0; //initial direction vector
-    double planeX = 0, planeY = 0.66; //the 2d raycaster version of camera plane
+    double planeX = 0, planeY = 0.8 ;//the 2d raycaster version of camera plane
 
     double time = 0; //time of current frame
     double oldTime = 0; //time of previous frame
@@ -152,11 +152,11 @@ int main(){
             }
         }
 
-        for(int x = 0; x < SCREEN_WIDTH; x++)
+        for(int x = 0; x < SCREEN_WIDTH; x++)  
         {
-            double cameraX = 2 * x / (double) (SCREEN_WIDTH - 1); //x-coordinate in camera space
-            double rayDirX = dirX + planeX * cameraX;
-            double rayDirY = dirY + planeY * cameraX;
+            double cameraX = (2 * x / (double) (SCREEN_WIDTH - 1))-0.66; //x-coordinate in camera space
+            double rayDirX = (dirX + planeX * cameraX) ;
+            double rayDirY = (dirY + planeY * cameraX) ;
 
             //which box of the map we're in
             int mapX = (int) posX;
@@ -225,7 +225,7 @@ int main(){
                 perpWallDist = (sideDistY - deltaDistY);
             }
 
-                  //Calculate height of line to draw on screen
+            //Calculate height of line to draw on screen
             int lineHeight = (int)( SCREEN_HEIGHT/ perpWallDist);
 
             //calculate lowest and highest pixel to fill in current stripe
@@ -277,8 +277,8 @@ int main(){
         time = SDL_GetTicks();
         double frameTime = (time - oldTime) / 1000.0; //frameTime is the time this frame has taken, in seconds
     //speed modifiers
-        double moveSpeed = frameTime * 5.0; //the constant value is in squares/second
-        double rotSpeed = frameTime * 3.0; //the constant value is in radians/second
+        double moveSpeed = frameTime * 10.0; //the constant value is in squares/second
+        double rotSpeed = frameTime * 6.0; //the constant value is in radians/second
        
         int texture_pitch = 0;
         void* texture_pixels = NULL;
@@ -300,8 +300,9 @@ int main(){
             QUIT_CHECK
             if(isKeyDown(e)){
                 if(getKeyPressed(e) == SDLK_UP){
-                    if(worldMap[(int)(posX + dirX * moveSpeed)][(int)posY] == 0) posX += dirX * moveSpeed;
-                    if(worldMap[(int) posX][(int)(posY + dirY * moveSpeed)] == 0) posY += dirY * moveSpeed;
+                    printf("(%f,%f)\n",dirX,dirY);
+                    if(worldMap[(int)(posX + dirX * moveSpeed)][(int)posY] == 0) posX += (dirX * moveSpeed);
+                    if(worldMap[(int) posX][(int)(posY + dirY * moveSpeed)] == 0) posY += (dirY * moveSpeed);
                 }
                 if(getKeyPressed(e) == SDLK_RIGHT){
                     //both camera direction and camera plane must be rotated
@@ -323,7 +324,7 @@ int main(){
                 }
                 if(getKeyPressed(e) == SDLK_DOWN){
                     if(worldMap[(int)(posX - dirX * moveSpeed)][(int)(posY)] == 0) posX -= dirX * moveSpeed;
-                    if(worldMap[(int)(posX)][(int)(posY - dirY * moveSpeed)] == 1) posY -= dirY * moveSpeed;
+                    if(worldMap[(int)(posX)][(int)(posY - dirY * moveSpeed)] == 0) posY -= dirY * moveSpeed;
                 }
             }   
         }
