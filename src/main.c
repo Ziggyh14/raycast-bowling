@@ -96,7 +96,7 @@ int main(){
     sprites = malloc(numOfSprites * sizeof(Sprite));
     // Initialise sprites
     for(int i = 0; i < numOfSprites; i++) {
-        sprites[i].pos = (vector2) {1, 1};
+        sprites[i].pos = (vector2) {4, 5};
         sprites[i].angle = 0;
         char* imageFilePath = "res/ball.png";
         sprites[i].texture = IMG_LoadTexture(state.rend, imageFilePath);
