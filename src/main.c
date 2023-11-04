@@ -13,7 +13,7 @@ int worldMap[10][10]=
   {1,0,0,0,0,0,1,0,0,1},
   {1,0,1,0,0,0,0,0,0,1},
   {1,0,0,0,0,0,0,0,0,1},
-  {1,0,0,0,1,0,0,0,0,1},
+  {1,0,0,0,0,0,0,0,0,1},
   {1,0,0,0,0,0,0,0,0,1},
   {1,0,0,0,0,0,0,1,0,1},
   {1,1,0,0,0,0,0,0,0,1},
@@ -89,7 +89,7 @@ int main(){
     sprites = malloc(numOfSprites * sizeof(Sprite));
     // Initialise sprites
     for(int i = 0; i < numOfSprites; i++) {
-        sprites[i].pos = (vector2) {0, 0};
+        sprites[i].pos = (vector2) {5, 4};
         sprites[i].angle = 0;
         char* imageFilePath = "res/ball.png";
         sprites[i].texture = IMG_LoadTexture(state.rend, imageFilePath);
@@ -217,42 +217,64 @@ int main(){
         // Render sprites
         for (int i = 0; i < numOfSprites; i++) {
             int w, h;
+            SDL_QueryTexture(sprites[i].texture, NULL, NULL, &w, &h);
             // Figure out where on the screen the texture should go and how big it should be
             // (relative to the camera)
             
             // Translate the position of the sprite to be relative to the camera
-            int rx, ry;
-            rx = sprites[i].pos.x - state.camera.pos.x;
-            ry = sprites[i].pos.y - state.camera.pos.y;
+            double rx, ry;
+            rx = sprites[i].pos.x - posX;
+            ry = sprites[i].pos.y - posY;
             
-            // (Euclidean) Distance from the camera
-            double distance = sqrt(pow(ry, 2) - pow(rx, 2));
+            // Based on theory from https://lodev.org/cgtutor/raycasting3.html
+            // Transform sprite with the inverse camera matrix
             
-            // Skip sprites inside the camera, otherwise it'll crash due to dividing by 0
-            if (distance == 0)
-                continue;
+            // required for correct matrix multiplication
+            double invDet = 1.0 / (planeX * dirY - dirX * planeY);
             
-            // Calculate x position of sprite based on angle difference
-            // Angles in radians (makes maths easier)
-            double spriteAngle = asin((double) distance / ry);
-            double angleDiff = spriteAngle - state.camera.angle;
+            double transformX = invDet * (dirY * rx - dirX * ry);
+            double transformY = invDet * (-planeY * rx + planeX * ry);
+            // This is actually the depth inside the screen - what Z is in 3D
             
-            // Screen X position of the sprite
-            double sx;
-            sx = distance * sin(angleDiff);
-            // Note that the origin from the maths is 0 so I need to translate
-            // that to the screen position by adding half of the screen width
-            sx += (int) (SCREEN_WIDTH / 2);
+            int spriteScreenX = (int) ((SCREEN_WIDTH / 2) * (1 + transformX / transformY));
             
-            SDL_QueryTexture(sprites[i].texture, NULL, NULL, &w, &h);
-            double width = w * 16 / distance;
-            double height = h * 16 / distance;
-            // Centred x and y - adjust to make the middle of the sprite the point from earlier
-            int cx = sx - (width / 2);
-            int cy = (int) (SCREEN_HEIGHT / 2) - (height / 2);
-            // Stretch it by 2x in both dimensions
-            SDL_Rect destRect = (SDL_Rect) {cx, cy , width, height};
-            SDL_RenderCopy(state.rend, sprites[i].texture, NULL, &destRect);
+            // Calculate height of the sprite on the screen
+            int spriteHeight = abs((int) (SCREEN_HEIGHT / transformY));
+            // Using transformY instead of the actual distance prevents fisheye
+            
+            // Calculate lowest and highest pixel to fill in
+            int drawStartY = -spriteHeight / 2 + SCREEN_HEIGHT/2;
+            if (drawStartY < 0) drawStartY = 0;
+            int drawEndY = spriteHeight / 2 + SCREEN_HEIGHT/2;
+            if (drawEndY >= SCREEN_HEIGHT) drawEndY = SCREEN_HEIGHT-1;
+            
+            // Calculate width of the sprite
+            int spriteWidth = fabs( SCREEN_HEIGHT / transformY);
+            int drawStartX = -spriteWidth / 2 + spriteScreenX;
+            if (drawStartX < 0) drawStartX = 0;
+            int drawEndX = spriteWidth / 2 + spriteScreenX;
+            if (drawEndX >= SCREEN_WIDTH) drawEndX = SCREEN_WIDTH - 1;
+            
+            // Loop through every vertical stripe of the sprite on screen
+            /*SDL_Rect srcRect = {0, 0, w, h};
+            SDL_Rect destRect = {drawStartX, drawStartY, spriteHeight, drawEndY - drawStartY};
+            SDL_RenderCopy(state.rend, sprites[i].texture, &srcRect, &destRect);*/
+            printf("Printing x=%i..%i: ", drawStartX, drawEndX);
+            for (int stripe = drawStartX; stripe < drawEndX; stripe++) {
+                double texX = stripe - (spriteScreenX -((double) spriteWidth / 2)) * w / spriteWidth;
+                // Skipped ZBuffer (so we have x-ray)
+                printf("%i", transformY > 0);
+                if (transformY > 0 && stripe > 0 && stripe < SCREEN_WIDTH) {
+                    SDL_Rect srcRect = {texX, 0, 1, h};
+                    SDL_Rect destRect = {stripe, drawStartY, 1, drawEndY - drawStartY};
+                    SDL_RenderCopy(state.rend, sprites[i].texture, &srcRect, &destRect);
+                }
+            }
+            printf("\n");
+            
+            
+            //SDL_Rect destRect = (SDL_Rect) {spriteScreenX, cy, spriteHeight /*square*/, spriteHeight};
+            //SDL_RenderCopy(state.rend, sprites[i].texture, NULL, &destRect);
         }
         
         SDL_RenderPresent(state.rend);
