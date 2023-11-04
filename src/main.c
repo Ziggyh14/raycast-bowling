@@ -52,6 +52,14 @@ SDL_Keycode getKeyPressed(SDL_Event event){
     return event.key.keysym.sym;
 }
 
+void load_texture(const char* file,ui32* dest){
+    SDL_Surface* s = IMG_Load("file");
+    SDL_LockSurface(s);
+    //REPLACE MEMCPY WITH REVERSE IN
+    //memcpy(dest,s->pixels,(TEXTURE_WIDTH*
+    SDL_UnlockSurface(s);
+    SDL_FreeSurface(s);
+}
 
 
 int main(){
@@ -159,7 +167,7 @@ int main(){
 
                 // floor
                 color = texfloor[TEXTURE_WIDTH * ty + tx];
-                color = (color >> 1) & 8355711; // make a bit darker
+                //color = (color >> 1) & 8355711; // make a bit darker
                 state.pixels[(SCREEN_WIDTH*y)+x] = color;
 
                 //ceiling (symmetrical, at screenHeight - y - 1 instead of y)
