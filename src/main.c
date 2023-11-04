@@ -18,7 +18,7 @@ int worldMap[10][10]=
   {1,0,0,0,0,0,0,1,0,1},
   {1,1,0,0,0,0,0,0,0,1},
   {1,0,0,0,1,0,0,0,0,1},
-  {1,1,1,1,1,1,1,1,1,1},
+  {3,3,3,3,3,3,3,3,3,3},
 };
 
 int* blank;
@@ -96,21 +96,24 @@ int main(){
     state.texture = SDL_CreateTexture(state.rend,SDL_PIXELFORMAT_ARGB8888,SDL_TEXTUREACCESS_STREAMING,
                                      SCREEN_WIDTH, SCREEN_HEIGHT);
 
-    ui32 textures[3][TEXTURE_WIDTH*TEXTURE_HEIGHT];
+    ui32 textures[4][TEXTURE_WIDTH*TEXTURE_HEIGHT];
 
 
     ui32 texwallblank[TEXTURE_WIDTH*TEXTURE_HEIGHT];
     ui32 texwallsign[TEXTURE_WIDTH*TEXTURE_HEIGHT];
     ui32 texfloor[TEXTURE_WIDTH*TEXTURE_HEIGHT];
+    ui32 texartwall[TEXTURE_WIDTH*TEXTURE_HEIGHT];
 
 
     load_texture("res/floor.png",texfloor);
     load_texture("res/wallblank.png",texwallblank);
     load_texture("res/wallsign.png",texwallsign);
+    load_texture("res/bowling.png",texartwall);
 
     memcpy(textures[0],texfloor,(TEXTURE_WIDTH*TEXTURE_HEIGHT)*4);
     memcpy(textures[1],texwallblank,(TEXTURE_WIDTH*TEXTURE_HEIGHT)*4);
     memcpy(textures[2],texwallsign,(TEXTURE_WIDTH*TEXTURE_HEIGHT)*4);
+    memcpy(textures[3],texartwall,(TEXTURE_WIDTH*TEXTURE_HEIGHT)*4);
 
 
     double posX = 5, posY = 5;  //x and y start position
