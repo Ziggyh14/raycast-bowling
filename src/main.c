@@ -7,18 +7,18 @@
 #include "header.h"
 #define QUIT_CHECK if(SDL_QuitRequested()){break;}
 
-int worldMap[10][10]=
+int worldMap[10][20]=
 {
-  {1,1,1,1,2,1,1,1,1,1},
-  {1,0,0,0,0,0,1,0,0,1},
-  {1,0,1,0,0,0,0,0,0,1},
-  {1,0,0,0,0,0,0,0,0,1},
-  {1,0,0,0,0,0,0,0,0,2},
-  {1,0,0,0,0,0,0,0,0,1},
-  {1,0,0,0,0,0,0,1,0,1},
-  {1,1,0,0,0,0,0,0,0,1},
-  {1,0,0,0,1,0,0,0,0,1},
-  {3,3,3,3,3,3,3,3,3,3},
+  {1,1,1,1,2,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0},
+  {1,0,0,0,0,0,1,0,0,1,0,0,0,0,0,0,0,0,0,0},
+  {1,0,1,0,0,0,0,0,0,1,4,4,4,4,4,4,4,4,4,4},
+  {1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
+  {1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
+  {1,0,0,0,0,-1,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
+  {1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
+  {1,1,0,0,0,0,0,0,0,1,4,4,4,4,4,4,4,4,4,1},
+  {1,0,0,0,1,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0},
+  {3,3,3,3,3,3,3,3,3,3,0,0,0,0,0,0,0,0,0,0},
 };
 
 int* blank;
@@ -96,29 +96,31 @@ int main(){
     state.texture = SDL_CreateTexture(state.rend,SDL_PIXELFORMAT_ARGB8888,SDL_TEXTUREACCESS_STREAMING,
                                      SCREEN_WIDTH, SCREEN_HEIGHT);
 
-    ui32 textures[4][TEXTURE_WIDTH*TEXTURE_HEIGHT];
+    ui32 textures[5][TEXTURE_WIDTH*TEXTURE_HEIGHT];
 
 
     ui32 texwallblank[TEXTURE_WIDTH*TEXTURE_HEIGHT];
     ui32 texwallsign[TEXTURE_WIDTH*TEXTURE_HEIGHT];
     ui32 texfloor[TEXTURE_WIDTH*TEXTURE_HEIGHT];
     ui32 texartwall[TEXTURE_WIDTH*TEXTURE_HEIGHT];
-
+    ui32 texgutter[TEXTURE_WIDTH*TEXTURE_HEIGHT];
 
     load_texture("res/floor.png",texfloor);
     load_texture("res/wallblank.png",texwallblank);
     load_texture("res/wallsign.png",texwallsign);
     load_texture("res/bowling.png",texartwall);
+    load_texture("res/wallgutter.png",texgutter);
 
     memcpy(textures[0],texfloor,(TEXTURE_WIDTH*TEXTURE_HEIGHT)*4);
     memcpy(textures[1],texwallblank,(TEXTURE_WIDTH*TEXTURE_HEIGHT)*4);
     memcpy(textures[2],texwallsign,(TEXTURE_WIDTH*TEXTURE_HEIGHT)*4);
     memcpy(textures[3],texartwall,(TEXTURE_WIDTH*TEXTURE_HEIGHT)*4);
+    memcpy(textures[4],texgutter,(TEXTURE_WIDTH*TEXTURE_HEIGHT)*4);
 
 
     double posX = 5, posY = 5;  //x and y start position
     double dirX = -1,dirY = 0; //initial direction vector
-    double planeX = 0, planeY = 0.8 ;//the 2d raycaster version of camera plane
+    double planeX = 0, planeY = 0.66 ;//the 2d raycaster version of camera plane
 
     double time = 0; //time of current frame
     double oldTime = 0; //time of previous frame
@@ -181,13 +183,13 @@ int main(){
                 Uint32 color;
 
                 // floor
-                color = textures[0][TEXTURE_WIDTH * ty + tx];
+                color = textures[0][(TEXTURE_WIDTH * ty) + tx];
                 //color = (color >> 1) & 8355711; // make a bit darker
                 state.pixels[(SCREEN_WIDTH*y)+x] = color;
 
                 //ceiling (symmetrical, at screenHeight - y - 1 instead of y)
                 color = textures[0][TEXTURE_WIDTH * ty + tx];
-                state.pixels[(SCREEN_HEIGHT* (SCREEN_HEIGHT - y - 1))+ x] = color;
+                state.pixels[(SCREEN_WIDTH* (SCREEN_HEIGHT - y - 1))+ x] = color;
             }
         }
 
@@ -291,6 +293,11 @@ int main(){
 
             double step = 1.0 * TEXTURE_HEIGHT/lineHeight;
 
+            int mapval = worldMap[mapX][mapY];
+            if(mapval< 0){
+                mapval = 0;
+            }
+
             double texPos = (drawStart - SCREEN_HEIGHT / 2 + lineHeight / 2) * step;
             for(int y = drawStart; y<drawEnd; y++)
             {
@@ -360,7 +367,7 @@ int main(){
             int spriteScreenX = (int) ((SCREEN_WIDTH / 2.0) * (1 + transformX / transformY));
             
             // Calculate height of the sprite on the screen
-            int spriteHeight = abs((int) (SCREEN_HEIGHT / transformY));
+            int spriteHeight = abs((int) (SCREEN_HEIGHT / transformY)) ;
             // Using transformY instead of the actual distance prevents fisheye
             
             // Calculate lowest and highest pixel to fill in
