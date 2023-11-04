@@ -214,11 +214,41 @@ int main(){
         // render on screen
         SDL_RenderCopy(state.rend, state.texture, NULL, NULL);
         
+        // Render sprites
         for (int i = 0; i < numOfSprites; i++) {
             int w, h;
+            // Figure out where on the screen the texture should go and how big it should be
+            // (relative to the camera)
+            
+            // Translate the position of the sprite to be relative to the camera
+            int rx, ry;
+            rx = sprites[i].pos.x - state.camera.pos.x;
+            ry = sprites[i].pos.y - state.camera.pos.y;
+            
+            // (Euclidean) Distance from the camera
+            int distance = sqrt(pow(sprites[i].pos.y - state.camera.pos.y, 2) - pow(sprites[i].pos.x - state.camera.pos.x, 2));
+            
+            // Calculate x position of sprite based on angle difference
+            // Angles in radians (makes maths easier)
+            float spriteAngle = asin((double) ry / distance);
+            float angleDiff = spriteAngle - state.camera.angle;
+            
+            // Screen X position of the sprite
+            int sx;
+            sx = distance * sin(angleDiff);
+            // Note that the origin from the maths is 0 so I need to translate
+            // that to the screen position by adding half of the screen width
+            sx += (SCREEN_WIDTH / 2);
+            
             SDL_QueryTexture(sprites[i].texture, NULL, NULL, &w, &h);
+            int width = w * 16 / distance;
+            int height = h * 16 / distance;
+            // Centred x and y - adjust to make the middle of the sprite the point from earlier
+            int cx = sx - (width / 2);
+            int cy = (SCREEN_HEIGHT / 2) - (height / 2);
             // Stretch it by 2x in both dimensions
-            SDL_Rect destRect = (SDL_Rect) {0,0,w*2,h*2};
+            SDL_Rect destRect = (SDL_Rect) {cx, cy , width, height};
+            printf("(%i, %i, %i, %i)\n", destRect.x, destRect.y, destRect.w, destRect.h);
             SDL_RenderCopy(state.rend, sprites[i].texture, NULL, &destRect);
         }
         
@@ -258,6 +288,13 @@ int main(){
             }   
         }
     }
+    
+    // Free up sprites
+    for(int i = 0; i < numOfSprites; i++) {
+        SDL_DestroyTexture(sprites[i].texture);
+    }
+    free(sprites);
+    numOfSprites = 0;
 
     SDL_DestroyTexture(state.texture);
     SDL_DestroyRenderer(state.rend);
