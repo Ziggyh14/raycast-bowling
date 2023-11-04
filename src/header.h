@@ -6,9 +6,6 @@
 
 #define SCREEN_WIDTH 640
 #define SCREEN_HEIGHT 420
-#define TEXTURE_WIDTH 64
-#define TEXTURE_HEIGHT 64
-
 
 typedef struct vector2 {
     ui32 x;
@@ -20,6 +17,12 @@ typedef struct Wall {
     vector2 w2;
 
 } Wall;
+
+typedef struct WallTexture {
+    size_t width;
+    size_t height;
+    ui32* pixels;
+} WallTexture;
 
 typedef struct Sprite {
     vector2 pos;

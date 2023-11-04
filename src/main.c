@@ -52,13 +52,15 @@ SDL_Keycode getKeyPressed(SDL_Event event){
     return event.key.keysym.sym;
 }
 
-void load_texture(const char* file,ui32* dest){
+void load_texture(const char* file, WallTexture* dest){
     SDL_Surface* s = IMG_Load(file);
     if (s == NULL) {
         fprintf(stderr, "Failed to load %s, %s\n",file, SDL_GetError());
         exit(1);
     }
     SDL_Surface* s1 = SDL_ConvertSurfaceFormat(s, SDL_PIXELFORMAT_ARGB8888, 0);
+    dest->width = s1->w;
+    dest->height = s1->h;
     SDL_FreeSurface(s);
     if (s1 == NULL) {
         fprintf(stderr, "Failed to convert %s, %s\n",file, SDL_GetError());
@@ -66,7 +68,12 @@ void load_texture(const char* file,ui32* dest){
     }
     SDL_LockSurface(s1);
     printf("%d\n",s1->format->BytesPerPixel);
-    memcpy(dest,s1->pixels,(TEXTURE_WIDTH*TEXTURE_HEIGHT)*sizeof(ui32));
+    dest->pixels = malloc((dest->width*dest->height)*sizeof(ui32));
+    if (dest->pixels == NULL) {
+        fprintf(stderr, "load_texture: Failed to allocate memory!");
+        exit(1);
+    }
+    memcpy(dest->pixels, s1->pixels, (dest->width*dest->height)*sizeof(ui32));
     SDL_UnlockSurface(s1);
     SDL_FreeSurface(s1);
 }
@@ -96,25 +103,13 @@ int main(){
     state.texture = SDL_CreateTexture(state.rend,SDL_PIXELFORMAT_ARGB8888,SDL_TEXTUREACCESS_STREAMING,
                                      SCREEN_WIDTH, SCREEN_HEIGHT);
 
-    ui32 textures[4][TEXTURE_WIDTH*TEXTURE_HEIGHT];
+    size_t numOfTextures = 4;
+    WallTexture textures[numOfTextures];
 
-
-    ui32 texwallblank[TEXTURE_WIDTH*TEXTURE_HEIGHT];
-    ui32 texwallsign[TEXTURE_WIDTH*TEXTURE_HEIGHT];
-    ui32 texfloor[TEXTURE_WIDTH*TEXTURE_HEIGHT];
-    ui32 texartwall[TEXTURE_WIDTH*TEXTURE_HEIGHT];
-
-
-    load_texture("res/floor.png",texfloor);
-    load_texture("res/wallblank.png",texwallblank);
-    load_texture("res/wallsign.png",texwallsign);
-    load_texture("res/bowling.png",texartwall);
-
-    memcpy(textures[0],texfloor,(TEXTURE_WIDTH*TEXTURE_HEIGHT)*4);
-    memcpy(textures[1],texwallblank,(TEXTURE_WIDTH*TEXTURE_HEIGHT)*4);
-    memcpy(textures[2],texwallsign,(TEXTURE_WIDTH*TEXTURE_HEIGHT)*4);
-    memcpy(textures[3],texartwall,(TEXTURE_WIDTH*TEXTURE_HEIGHT)*4);
-
+    load_texture("res/floor.png",&textures[0]);
+    load_texture("res/wallblank.png",&textures[1]);
+    load_texture("res/wallsign.png",&textures[2]);
+    load_texture("res/bowling.png",&textures[3]);
 
     double posX = 5, posY = 5;  //x and y start position
     double dirX = -1,dirY = 0; //initial direction vector
@@ -169,8 +164,8 @@ int main(){
                 int cellY = (int)(floorY);
 
                 // get the texture coordinate from the fractional part
-                int tx = (int)(TEXTURE_WIDTH * (floorX - cellX)) & (TEXTURE_WIDTH - 1);
-                int ty = (int)(TEXTURE_HEIGHT * (floorY - cellY)) & (TEXTURE_HEIGHT - 1);
+                int tx = (int)(textures[0].width * (floorX - cellX)) & (textures[0].height - 1);
+                int ty = (int)(textures[0].width * (floorY - cellY)) & (textures[0].height - 1);
 
                 floorX += floorStepX;
                 floorY += floorStepY;
@@ -181,12 +176,12 @@ int main(){
                 Uint32 color;
 
                 // floor
-                color = textures[0][TEXTURE_WIDTH * ty + tx];
+                color = textures[0].pixels[textures[0].width * ty + tx];
                 //color = (color >> 1) & 8355711; // make a bit darker
                 state.pixels[(SCREEN_WIDTH*y)+x] = color;
 
                 //ceiling (symmetrical, at screenHeight - y - 1 instead of y)
-                color = textures[0][TEXTURE_WIDTH * ty + tx];
+                color = textures[0].pixels[textures[0].width * ty + tx];
                 state.pixels[(SCREEN_HEIGHT* (SCREEN_HEIGHT - y - 1))+ x] = color;
             }
         }
@@ -285,19 +280,19 @@ int main(){
             
             wallX -= floor((wallX));
 
-            int texX = (int)(wallX*(double)(TEXTURE_WIDTH));
-            if(side == 0 && rayDirX > 0) texX = TEXTURE_WIDTH - texX - 1;
-            if(side == 1 && rayDirY < 0) texX = TEXTURE_WIDTH - texX - 1;
+            int texX = (int)(wallX*(double)(textures[worldMap[mapX][mapY]].width));
+            if(side == 0 && rayDirX > 0) texX = textures[worldMap[mapX][mapY]].width - texX - 1;
+            if(side == 1 && rayDirY < 0) texX = textures[worldMap[mapX][mapY]].width - texX - 1;
 
-            double step = 1.0 * TEXTURE_HEIGHT/lineHeight;
+            double step = 1.0 * textures[worldMap[mapX][mapY]].height /lineHeight;
 
-            double texPos = (drawStart - SCREEN_HEIGHT / 2 + lineHeight / 2) * step;
+            double texPos = (drawStart - SCREEN_HEIGHT / 2.0 + lineHeight / 2.0) * step;
             for(int y = drawStart; y<drawEnd; y++)
             {
                 // Cast the texture coordinate to integer, and mask with (texHeight - 1) in case of overflow
-                int texY = (int)texPos & (TEXTURE_HEIGHT - 1);
+                int texY = (int)texPos & (textures[worldMap[mapX][mapY]].height - 1);
                 texPos += step;
-                Uint32 color = textures[worldMap[mapX][mapY]][TEXTURE_HEIGHT * texY + texX];
+                Uint32 color = textures[worldMap[mapX][mapY]].pixels[textures[worldMap[mapX][mapY]].height * texY + texX];
                 //make color darker for y-sides: R, G and B byte each divided through two with a "shift" and an "and"
                 if(side == 1) color = (color >> 1) & 8355711;
                 state.pixels[(SCREEN_WIDTH *y)+x] = color;
@@ -438,6 +433,10 @@ int main(){
     }
     free(sprites);
     numOfSprites = 0;
+    
+    for(int i = 0; i < numOfTextures; i++) {
+        free(textures[i].pixels);
+    }
 
     SDL_DestroyTexture(state.texture);
     SDL_DestroyRenderer(state.rend);
