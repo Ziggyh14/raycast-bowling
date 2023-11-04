@@ -24,3 +24,6 @@ $(OBJ_DIR)/%.o: $(SRC_DIR)/%.c $(HEADERS) | $(OBJ_DIR)
 
 clean:
 	rm obj/* bin/*
+
+run: $(OUT)
+	./$(OUT)
