@@ -1,8 +1,8 @@
 
 #define ui32 __uint32_t
 
-#define SCREEN_WIDTH 384
-#define SCREEN_HEIGHT 216
+#define SCREEN_WIDTH 1280
+#define SCREEN_HEIGHT 720
 
 
 typedef struct vector2 {

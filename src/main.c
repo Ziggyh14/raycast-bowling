@@ -33,12 +33,27 @@ int main(){
 
     state.texture = SDL_CreateTexture(state.rend,SDL_PIXELFORMAT_ABGR32,SDL_TEXTUREACCESS_STREAMING,
                                      SCREEN_WIDTH, SCREEN_HEIGHT);
+                                    
+    int texture_pitch = 0;
+    void* texture_pixels = NULL;
+    if (SDL_LockTexture(state.texture, NULL, &texture_pixels, &texture_pitch) != 0) {
+        SDL_Log("Unable to lock texture: %s", SDL_GetError());
+    }
+    else {
+        memcpy(texture_pixels, state.pixels, texture_pitch * SCREEN_HEIGHT);
+    }
+    SDL_UnlockTexture(state.texture);
 
-    
 
 
     while(1){
         QUIT_CHECK;
+
+
+        // render on screen
+        SDL_RenderClear(state.rend);
+        SDL_RenderCopy(state.rend, state.texture, NULL, NULL);
+        SDL_RenderPresent(state.rend);
 
     }
     return 0;
