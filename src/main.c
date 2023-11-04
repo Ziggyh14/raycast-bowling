@@ -87,8 +87,12 @@ int main(){
         }
     }*/
     SDL_Surface* floortex = IMG_Load("res/floor.png");
-    printf("%d\n",floortex->format->BytesPerPixel);
+    if (floortex == NULL) {
+        fprintf(stderr, "Failed to load res/floor.png, %s\n", SDL_GetError());
+        exit(1);
+    }
     SDL_LockSurface(floortex);
+    printf("%d\n",floortex->format->BytesPerPixel);
     memcpy(texfloor,floortex->pixels,(TEXTURE_WIDTH*TEXTURE_HEIGHT)*sizeof(ui32));
     SDL_UnlockSurface(floortex);
 
