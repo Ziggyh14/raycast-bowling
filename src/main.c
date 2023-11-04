@@ -233,6 +233,10 @@ int main(){
                     planeX = planeX * cos(rotSpeed) - planeY * sin(rotSpeed);
                     planeY = oldPlaneX * sin(rotSpeed) + planeY * cos(rotSpeed);
                 }
+                if(getKeyPressed(e) == SDLK_DOWN){
+                    if(worldMap[(int)(posX - dirX * moveSpeed)][(int)(posY)] == 0) posX -= dirX * moveSpeed;
+                    if(worldMap[(int)(posX)][(int)(posY - dirY * moveSpeed)] == 1) posY -= dirY * moveSpeed;
+                }
             }   
         }
     }
