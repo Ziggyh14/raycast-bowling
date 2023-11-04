@@ -88,7 +88,7 @@ int main(){
 
     while(1){
 
-       // QUIT_CHECK;
+        QUIT_CHECK;
 
         for(int x = 0; x < SCREEN_WIDTH; x++)
         {
@@ -209,6 +209,7 @@ int main(){
 
         SDL_Event e;
         while(SDL_PollEvent(&e)){
+            QUIT_CHECK
             if(isKeyDown(e)){
                 if(getKeyPressed(e) == SDLK_UP){
                     if(worldMap[(int)(posX + dirX * moveSpeed)][(int)posY] == 0) posX += dirX * moveSpeed;
