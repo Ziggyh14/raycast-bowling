@@ -86,9 +86,17 @@ int main(){
             texfloor[TEXTURE_WIDTH*y+x] = 0xF3F084;
         }
     }*/
-    SDL_Surface* floortex = IMG_Load("res/floor.png");
-    if (floortex == NULL) {
+    
+    // Load the image - but the pixel format might be different, resulting in wrong colours, so we convert it before using it
+    SDL_Surface* floortexFromImg = IMG_Load("res/floor.png");
+    if (floortexFromImg == NULL) {
         fprintf(stderr, "Failed to load res/floor.png, %s\n", SDL_GetError());
+        exit(1);
+    }
+    SDL_Surface* floortex = SDL_ConvertSurfaceFormat(floortexFromImg, SDL_PIXELFORMAT_ARGB8888, 0);
+    SDL_FreeSurface(floortexFromImg);
+    if (floortex == NULL) {
+        fprintf(stderr, "Failed to convert res/floor.png, %s\n", SDL_GetError());
         exit(1);
     }
     SDL_LockSurface(floortex);
