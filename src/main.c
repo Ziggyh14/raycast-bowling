@@ -243,13 +243,20 @@ int main(){
             // Using transformY instead of the actual distance prevents fisheye
             
             // Calculate lowest and highest pixel to fill in
+            int texStartY = 0, texEndY = h;
             int drawStartY = -spriteHeight / 2 + SCREEN_HEIGHT/2;
-            if (drawStartY < 0) drawStartY = 0;
+            if (drawStartY < 0) {
+                texStartY = (0 - drawStartY) / (spriteHeight / h) ;
+                drawStartY = 0;
+            }
             int drawEndY = spriteHeight / 2 + SCREEN_HEIGHT/2;
-            if (drawEndY >= SCREEN_HEIGHT) drawEndY = SCREEN_HEIGHT-1;
+            if (drawEndY >= SCREEN_HEIGHT) {
+                texEndY = h - ((drawEndY - SCREEN_HEIGHT) / (spriteHeight / h));
+                drawEndY = SCREEN_HEIGHT-1;
+            }
             
             // Calculate width of the sprite
-            double spriteWidth = fabs( SCREEN_HEIGHT / transformY);
+            int spriteWidth = fabs( SCREEN_HEIGHT / transformY);
             int drawStartX = -spriteWidth / 2 + spriteScreenX;
             if (drawStartX < 0) drawStartX = 0;
             int drawEndX = spriteWidth / 2 + spriteScreenX;
@@ -257,10 +264,11 @@ int main(){
             
             // Loop through every vertical stripe of the sprite on screen
             for (int stripe = drawStartX; stripe < drawEndX; stripe++) {
-                double texX = ((stripe - (-spriteWidth / 2 + spriteScreenX)) * w / spriteWidth);
+                double texX = ((stripe - (-spriteWidth / 2.0 + spriteScreenX)) * w / spriteWidth);
                 // Skipped ZBuffer (so we have x-ray)
                 if (transformY > 0 && stripe > 0 && stripe < SCREEN_WIDTH) {
-                    SDL_Rect srcRect = {texX, 0, 1, h};
+                    SDL_Rect srcRect = {texX, texStartY, 1, texEndY - texStartY};
+                    printf("Drawing from %i to %i in sprite\n", texStartY, texEndY);
                     SDL_Rect destRect = {stripe, drawStartY, 1, drawEndY - drawStartY};
                     SDL_RenderCopy(state.rend, sprites[i].texture, &srcRect, &destRect);
                 }
