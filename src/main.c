@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <math.h>
 #include "header.h"
 #include <SDL2/SDL.h>
 
@@ -12,13 +13,34 @@ struct {
     SDL_Texture* texture;
     ui32 pixels[SCREEN_WIDTH*SCREEN_HEIGHT];
 
+    struct {
+        vector2 pos;
+        float angle, anglecos, anglesin;
+        //int sector;
+    } camera;
+
 } state;
+
+
 
 void verline(int x, int y1, int y2,ui32 color){
     for (int y = y1; y <= y2; y++) {
         state.pixels[(y * SCREEN_WIDTH) + x] = color;
     }
 }
+
+vector2 intersect(float raya, Wall wall){
+
+    vector2 v;
+    ui32 b1 = (state.camera.pos.x - wall.x1)*(wall.slope*(state.camera.pos.y - wall.y1);
+    //x  = b1 / (m2 - m1)
+    //y  = w.y1 + (x - w.x1) * m1
+    v.x = b1/(tan(raya) - wall.slope);
+    v.y = wall.y1 + ((v.x - wall.x1) * wall.slope);
+
+    return v;
+}
+
 
 
 int main(){
@@ -44,7 +66,15 @@ int main(){
     state.texture = SDL_CreateTexture(state.rend,SDL_PIXELFORMAT_ABGR32,SDL_TEXTUREACCESS_STREAMING,
                                      SCREEN_WIDTH, SCREEN_HEIGHT);
 
-    verline(720,20,600,0xffffff00);
+    state.camera.pos.x = 0;
+    state.camera.pos.y = 0;
+
+   
+
+
+
+
+
 
     int texture_pitch = 0;
     void* texture_pixels = NULL;
