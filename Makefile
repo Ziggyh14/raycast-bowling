@@ -3,11 +3,7 @@ CC := gcc
 SRC_DIR = src
 OBJ_DIR = obj
 
-CFLAGS = -std=c11 -Wall
-CFLAGS += -Wextra -Wpedantic \
-          -Wformat=2 -Wno-unused-parameter -Wshadow \
-          -Wwrite-strings \
-          -Wredundant-decls -Wnested-externs -Wmissing-include-dirs
+CFLAGS = -std=c11 -Wall -g
 
 LIBD = lib
 SDLLIBD = $(LIBD)/SDL
@@ -24,10 +20,3 @@ $(OUT): $(OBJ) | $(BIN_DIR)
 
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.c | $(OBJ_DIR)
 	$(CC) $(CFLAGS) -c $< -o $@ $(INCFLAGS)
-
-
-
-
-
-
-
