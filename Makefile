@@ -7,7 +7,7 @@ CFLAGS = -std=c11 -Wall -g
 
 LIBD = lib
 SDLLIBD = $(LIBD)/SDL
-INCFLAGS = -lSDL2 -lm
+INCFLAGS = -lSDL2 -lSDL2_image -lm
 OUT = $(BIN)/out
 SRC := $(wildcard $(SRC_DIR)/*.c)
 HEADERS := $(wildcard $(SRC_DIR)/*.h)

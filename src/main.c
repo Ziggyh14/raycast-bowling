@@ -1,9 +1,10 @@
+#include <SDL2/SDL_render.h>
+#include <SDL2/SDL_surface.h>
+#include <SDL2/SDL_image.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
 #include "header.h"
-#include <SDL2/SDL.h>
-
 #define QUIT_CHECK if(SDL_QuitRequested()){break;}
 
 struct {
@@ -49,8 +50,8 @@ vector2 intersect_segs(vector2 w0, vector2 w1, vector2 r0, vector2 r1) {
 }
 
 int main(){
-
-  
+    Sprite* sprites = NULL;
+    size_t numOfSprites = 1;
 
     if(SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO)){
         printf("error initializing SDL: %s\n", SDL_GetError());
@@ -93,6 +94,15 @@ int main(){
     }
     SDL_UnlockTexture(state.texture);
 
+    sprites = malloc(numOfSprites * sizeof(Sprite));
+    // Initialise sprites
+    for(int i = 0; i < numOfSprites; i++) {
+        sprites[i].pos = (vector2) {0, 0};
+        sprites[i].angle = 0;
+        char* imageFilePath = "res/ball.png";
+        sprites[i].texture = IMG_LoadTexture(state.rend, imageFilePath);
+    }
+    
 
     while(1){
         QUIT_CHECK;
@@ -101,6 +111,15 @@ int main(){
         // render on screen
         SDL_RenderClear(state.rend);
         SDL_RenderCopy(state.rend, state.texture, NULL, NULL);
+        
+        for (int i = 0; i < numOfSprites; i++) {
+            int w, h;
+            SDL_QueryTexture(sprites[i].texture, NULL, NULL, &w, &h);
+            // Stretch it by 2x in both dimensions
+            SDL_Rect destRect = (SDL_Rect) {0,0,w*2,h*2};
+            SDL_RenderCopy(state.rend, sprites[i].texture, NULL, &destRect);
+        }
+        
         SDL_RenderPresent(state.rend);
 
     }
