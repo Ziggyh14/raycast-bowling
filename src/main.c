@@ -5,21 +5,31 @@
 
 #define QUIT_CHECK if(SDL_QuitRequested()){break;}
 
-struct state{
+struct {
     SDL_Window* window;
     SDL_Surface* surface;
     SDL_Renderer* rend;
     SDL_Texture* texture;
-    ui32 pixels[SCREEN_WIDTH *SCREEN_HEIGHT];
+    ui32 pixels[SCREEN_WIDTH*SCREEN_HEIGHT];
 
 } state;
 
+void verline(int x, int y1, int y2,ui32 color){
+    for (int y = y1; y <= y2; y++) {
+        state.pixels[(y * SCREEN_WIDTH) + x] = color;
+    }
+}
+
+
 int main(){
+
+  
 
     if(SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO)){
         printf("error initializing SDL: %s\n", SDL_GetError());
         return 1;
         }
+    
 
     state.window =  SDL_CreateWindow(
             "game",
@@ -33,7 +43,9 @@ int main(){
 
     state.texture = SDL_CreateTexture(state.rend,SDL_PIXELFORMAT_ABGR32,SDL_TEXTUREACCESS_STREAMING,
                                      SCREEN_WIDTH, SCREEN_HEIGHT);
-                                    
+
+    verline(720,20,600,0xffffff00);
+
     int texture_pitch = 0;
     void* texture_pixels = NULL;
     if (SDL_LockTexture(state.texture, NULL, &texture_pixels, &texture_pitch) != 0) {
@@ -44,6 +56,7 @@ int main(){
     }
     SDL_UnlockTexture(state.texture);
 
+    
 
 
     while(1){
@@ -56,5 +69,10 @@ int main(){
         SDL_RenderPresent(state.rend);
 
     }
+
+    SDL_DestroyTexture(state.texture);
+    SDL_DestroyRenderer(state.rend);
+    SDL_DestroyWindow(state.window);
+    
     return 0;
 }
