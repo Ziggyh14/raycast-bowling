@@ -236,7 +236,7 @@ int main(){
             double transformY = invDet * (-planeY * rx + planeX * ry);
             // This is actually the depth inside the screen - what Z is in 3D
             
-            int spriteScreenX = (int) ((SCREEN_WIDTH / 2) * (1 + transformX / transformY));
+            int spriteScreenX = (int) ((SCREEN_WIDTH / 2.0) * (1 + transformX / transformY));
             
             // Calculate height of the sprite on the screen
             int spriteHeight = abs((int) (SCREEN_HEIGHT / transformY));
@@ -249,7 +249,7 @@ int main(){
             if (drawEndY >= SCREEN_HEIGHT) drawEndY = SCREEN_HEIGHT-1;
             
             // Calculate width of the sprite
-            int spriteWidth = fabs( SCREEN_HEIGHT / transformY);
+            double spriteWidth = fabs( SCREEN_HEIGHT / transformY);
             int drawStartX = -spriteWidth / 2 + spriteScreenX;
             if (drawStartX < 0) drawStartX = 0;
             int drawEndX = spriteWidth / 2 + spriteScreenX;
@@ -259,18 +259,20 @@ int main(){
             /*SDL_Rect srcRect = {0, 0, w, h};
             SDL_Rect destRect = {drawStartX, drawStartY, spriteHeight, drawEndY - drawStartY};
             SDL_RenderCopy(state.rend, sprites[i].texture, &srcRect, &destRect);*/
-            printf("Printing x=%i..%i: ", drawStartX, drawEndX);
+            //printf("Printing x=%i..%i: ", drawStartX, drawEndX);
             for (int stripe = drawStartX; stripe < drawEndX; stripe++) {
-                double texX = stripe - (spriteScreenX -((double) spriteWidth / 2)) * w / spriteWidth;
+                double texX = (1 * (stripe - (-spriteWidth / 2 + spriteScreenX)) * w / spriteWidth);
+                //double texX = stripe - (spriteScreenX -((double) spriteWidth / 2)) * w / spriteWidth; //BUGGY LINE
                 // Skipped ZBuffer (so we have x-ray)
-                printf("%i", transformY > 0);
+                //printf("%i", transformY > 0);
                 if (transformY > 0 && stripe > 0 && stripe < SCREEN_WIDTH) {
                     SDL_Rect srcRect = {texX, 0, 1, h};
+                    printf("From %f to %i\n", texX, stripe);
                     SDL_Rect destRect = {stripe, drawStartY, 1, drawEndY - drawStartY};
                     SDL_RenderCopy(state.rend, sprites[i].texture, &srcRect, &destRect);
                 }
             }
-            printf("\n");
+            //printf("\n");
             
             
             //SDL_Rect destRect = (SDL_Rect) {spriteScreenX, cy, spriteHeight /*square*/, spriteHeight};
