@@ -94,7 +94,26 @@ int main(){
     while(1){
 
         QUIT_CHECK;
+/*
+        //FLOOR loop
+        for(int y = 0; y<SCREEN_HEIGHT;y++){
 
+            // rayDir for leftmost ray (x = 0) and rightmost ray (x = w)
+            float rayDirX0 = dirX - planeX;
+            float rayDirY0 = dirY - planeY;
+            float rayDirX1 = dirX + planeX;
+            float rayDirY1 = dirY + planeY;
+
+            // horizon
+            int p = y -SCREEN_HEIGHT /2;
+            //vert pos of camera
+            float posZ = 0.5 *SCREEN_HEIGHT;
+
+            //Horzontal distance from the camer to the floor
+
+
+        }
+*/
         for(int x = 0; x < SCREEN_WIDTH; x++)
         {
             double cameraX = 2 * x / (double) (SCREEN_WIDTH - 1); //x-coordinate in camera space
@@ -213,7 +232,6 @@ int main(){
             verline(x, drawStart, drawEnd,colour);
             //verline(x, drawEnd, SCREEN_HEIGHT - 1, 0xFF505050);
             */
-
         }
         //speed modifiers
 
