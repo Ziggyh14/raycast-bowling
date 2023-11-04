@@ -356,7 +356,6 @@ int main(){
                 // Skipped ZBuffer (so we have x-ray)
                 if (transformY > 0 && stripe > 0 && stripe < SCREEN_WIDTH) {
                     SDL_Rect srcRect = {texX, texStartY, 1, texEndY - texStartY};
-                    printf("Drawing from %i to %i in sprite\n", texStartY, texEndY);
                     SDL_Rect destRect = {stripe, drawStartY, 1, drawEndY - drawStartY};
                     SDL_RenderCopy(state.rend, sprites[i].texture, &srcRect, &destRect);
                 }
