@@ -226,7 +226,7 @@ int main(){
             ry = sprites[i].pos.y - state.camera.pos.y;
             
             // (Euclidean) Distance from the camera
-            int distance = sqrt(pow(ry, 2) - pow(rx, 2));
+            double distance = sqrt(pow(ry, 2) - pow(rx, 2));
             
             // Skip sprites inside the camera, otherwise it'll crash due to dividing by 0
             if (distance == 0)
@@ -234,22 +234,22 @@ int main(){
             
             // Calculate x position of sprite based on angle difference
             // Angles in radians (makes maths easier)
-            float spriteAngle = asin((double) ry / distance);
-            float angleDiff = spriteAngle - state.camera.angle;
+            double spriteAngle = asin((double) ry / distance);
+            double angleDiff = spriteAngle - state.camera.angle;
             
             // Screen X position of the sprite
-            int sx;
+            double sx;
             sx = distance * sin(angleDiff);
             // Note that the origin from the maths is 0 so I need to translate
             // that to the screen position by adding half of the screen width
-            sx += (SCREEN_WIDTH / 2);
+            sx += (int) (SCREEN_WIDTH / 2);
             
             SDL_QueryTexture(sprites[i].texture, NULL, NULL, &w, &h);
-            int width = w * 16 / distance;
-            int height = h * 16 / distance;
+            double width = w * 16 / distance;
+            double height = h * 16 / distance;
             // Centred x and y - adjust to make the middle of the sprite the point from earlier
             int cx = sx - (width / 2);
-            int cy = (SCREEN_HEIGHT / 2) - (height / 2);
+            int cy = (int) (SCREEN_HEIGHT / 2) - (height / 2);
             // Stretch it by 2x in both dimensions
             SDL_Rect destRect = (SDL_Rect) {cx, cy , width, height};
             SDL_RenderCopy(state.rend, sprites[i].texture, NULL, &destRect);
