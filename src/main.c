@@ -127,6 +127,10 @@ int main(){
             // (Euclidean) Distance from the camera
             int distance = sqrt(pow(sprites[i].pos.y - state.camera.pos.y, 2) - pow(sprites[i].pos.x - state.camera.pos.x, 2));
             
+            // Skip sprites inside the camera, otherwise it'll crash due to dividing by 0
+            if (distance == 0)
+                continue;
+            
             // Calculate x position of sprite based on angle difference
             // Angles in radians (makes maths easier)
             float spriteAngle = asin((double) ry / distance);
