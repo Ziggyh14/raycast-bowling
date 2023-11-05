@@ -86,7 +86,7 @@ void load_texture(const char* file, WallTexture* dest){
 int main(){
     Sprite* sprites = NULL;
     size_t numOfSprites = 11;
-    int zbuffer[SCREEN_WIDTH];
+    double zbuffer[SCREEN_WIDTH];
 
     if(SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO)){
         printf("error initializing SDL: %s\n", SDL_GetError());
@@ -126,6 +126,7 @@ int main(){
     double oldTime = 0; //time of previous frame
 
     sprites = malloc(numOfSprites * sizeof(Sprite));
+    
     // Initialise sprites
     for(int i = 0; i < numOfSprites; i++) {
         sprites[i].pos = (fvec2) { 3 + (i / 3.0),18};
