@@ -119,6 +119,7 @@ int main(){
     // Cheats
     int noWalls = 0;
     int noClip = 0;
+    int cheater = 0;
 
     int heldSprite = -1;
     
@@ -633,7 +634,10 @@ int main(){
         // Render Score
         SDL_Color colour = {0};
         char scoreStr[64] = {0};
-        if (posY >= BOUNDARY_LINE) {
+        if (noClip) {
+            colour.r = 255; colour.g = 255; colour.b = 51;
+            snprintf(scoreStr, 63, "No clip active - use with care");
+        } else if (posY >= BOUNDARY_LINE) {
             colour.r = 232; colour.g = 23; colour.b = 51;
             snprintf(scoreStr, 63, "You're over the line!");
         } else if (charge > 0.03) {
@@ -684,7 +688,7 @@ int main(){
                         win =1;
                         play_Sample("res/jazz.wav",0);
                     }
-                    if(score >= (numOfSprites - 1)) {
+                    if(score >= (numOfSprites - 1) && !cheater) {
                         // big win
                         worldMap[19][3] = 14;
                     }
@@ -726,6 +730,10 @@ int main(){
                     // No walls cheat
                     noWalls = !noWalls;
                 }
+                if(getKeyPressed(e) == SDLK_F2) {
+                    noClip = !noClip;
+                    cheater = 1;
+                }
             }
             if(isKeyUp(e)){
                 if(getKeyPressed(e) == SDLK_SPACE && numOfSprites >0){
@@ -744,8 +752,13 @@ int main(){
         const Uint8* keys;
         keys = SDL_GetKeyboardState(NULL);
         if(keys[SDL_SCANCODE_UP]){
-            if(worldMap[(int)(posX + dirX * moveSpeed)][(int)posY] == 0) posX += (dirX * moveSpeed);
-            if(worldMap[(int) posX][(int)(posY + dirY * moveSpeed)] == 0) posY += (dirY * moveSpeed);
+            if (noClip) {
+                posX += (dirX * moveSpeed);
+                posY += (dirY * moveSpeed);
+            } else {
+                if(worldMap[(int)(posX + dirX * moveSpeed)][(int)posY] == 0) posX += (dirX * moveSpeed);
+                if(worldMap[(int) posX][(int)(posY + dirY * moveSpeed)] == 0) posY += (dirY * moveSpeed);
+            }
         }
         if(keys[SDL_SCANCODE_RIGHT]){
             //both camera direction and camera plane must be rotated
@@ -765,8 +778,13 @@ int main(){
             planeY = oldPlaneX * sin(rotSpeed) + planeY * cos(rotSpeed);
         }
         if(keys[SDL_SCANCODE_DOWN]){
-            if(worldMap[(int)(posX - dirX * moveSpeed)][(int)(posY)] == 0) posX -= dirX * moveSpeed;
-            if(worldMap[(int)(posX)][(int)(posY - dirY * moveSpeed)] == 0) posY -= dirY * moveSpeed;
+            if (noClip) {
+                posX -= dirX * moveSpeed;
+                posY -= dirY * moveSpeed;
+            } else {
+                if(worldMap[(int)(posX - dirX * moveSpeed)][(int)(posY)] == 0) posX -= dirX * moveSpeed;
+                if(worldMap[(int)(posX)][(int)(posY - dirY * moveSpeed)] == 0) posY -= dirY * moveSpeed;
+            }
         }
         if(keys[SDL_SCANCODE_SPACE] && numOfSprites > 0 && posY < BOUNDARY_LINE) {
             charge+=0.03;
