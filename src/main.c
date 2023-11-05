@@ -1,4 +1,5 @@
 #include <SDL2/SDL_keyboard.h>
+#include <SDL2/SDL_keycode.h>
 #include <SDL2/SDL_render.h>
 #include <SDL2/SDL_surface.h>
 #include <SDL2/SDL_image.h>
@@ -89,6 +90,8 @@ int main(){
     size_t numOfSprites = 12;
     double zbuffer[SCREEN_WIDTH];
 
+    int heldSprite = -1;
+    
     create_Table();
 
     if(SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO)){
@@ -394,6 +397,8 @@ int main(){
             for (int x = 1; x < numLeft; x++) {
                 if (spriteDists[x-1] <= spriteDists[x]) {
                     double tmpDist = spriteDists[x-1];
+                    if (heldSprite == x-1) heldSprite = x;
+                    else if (heldSprite == x) heldSprite = x-1;
                     Sprite tmpSprite = sprites[x-1];
                     spriteDists[x-1] = spriteDists[x];
                     sprites[x-1] = sprites[x];
@@ -406,6 +411,10 @@ int main(){
         
         // Render sprites
         for (int i = 0; i < numOfSprites; i++) {
+            // Hide held item
+            if(heldSprite == i)
+                continue;
+            
             int w, h;
             SDL_QueryTexture(sprites[i].texture, NULL, NULL, &w, &h);
             // Figure out where on the screen the texture should go and how big it should be
@@ -469,6 +478,32 @@ int main(){
         SDL_Event e;
         while(SDL_PollEvent(&e)){
             QUIT_CHECK
+            
+            if(isKeyDown(e)) {
+                if(getKeyPressed(e) == SDLK_e && numOfSprites > 0) {
+                    printf("E is pressed\n");
+                    if (heldSprite == -1) {
+                        // Not holding anything
+                        // Get the closest sprite
+                        double closestSpriteDist = INFINITY;
+                        double closestSpriteIndex = 0;
+                        for (int i = 0; i < numOfSprites; i++) {
+                            double d = spriteDistance(sprites[i], posX, posY);
+                            if (d < closestSpriteDist) {
+                                closestSpriteDist = d;
+                                closestSpriteIndex = i;
+                            }
+                        }
+                        // If it's close enough, pick it up
+                        if (closestSpriteDist < 1.5) {
+                            heldSprite = closestSpriteIndex;
+                        }
+                    } else {
+                        // Put it down
+                        heldSprite = -1;
+                    }
+                }
+            }
         }
         const Uint8* keys;
         keys = SDL_GetKeyboardState(NULL);
