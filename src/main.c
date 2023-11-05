@@ -527,6 +527,7 @@ int main(){
                     if (heldSprite != -1) {
                         sprites[heldSprite].dir = (fvec2) {dirX,dirY};
                         sprites[heldSprite].vel = min(0.5,charge);
+                        charge = 0;
                         sprites[heldSprite].pos = (fvec2) {posX+(0.2*dirX),posY+(0.2*dirY)};
                         heldSprite = -1;
                     } 
