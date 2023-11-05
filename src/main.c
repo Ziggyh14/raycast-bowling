@@ -517,6 +517,9 @@ int main(){
         if (posY >= BOUNDARY_LINE) {
             colour.r = 232; colour.g = 23; colour.b = 51;
             snprintf(scoreStr, 63, "You're over the line!");
+        } else if (charge > 0.03) {
+            colour.r = 128; colour.g = 255; colour.b = 128;
+            snprintf(scoreStr, 63, "Charge: %.0f%%", min(100.0, charge / 0.5 * 100.0));
         } else {
             colour.r = 0; colour.g = 0; colour.b = 0;
             snprintf(scoreStr, 63, "Score: %li", score);
