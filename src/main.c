@@ -154,7 +154,7 @@ int main(){
 
     
 
-    size_t numOfTextures = 14;
+    size_t numOfTextures = 15;
     WallTexture textures[numOfTextures];
 
     load_texture("res/floor.png",&textures[0]);
@@ -171,6 +171,7 @@ int main(){
     load_texture("res/holly.png",&textures[11]);
     load_texture("res/wood.png",&textures[12]);
     load_texture("res/exit.png",&textures[13]);
+    load_texture("res/exit_open.png", &textures[14]);
 
     
     double posX = 4.5, posY = 4.5;  //x and y start position
@@ -668,6 +669,10 @@ int main(){
                     if(score >= 10 && win==0){
                         win =1;
                         play_Sample("res/jazz.wav",0);
+                    }
+                    if(score >= (numOfSprites - 1)) {
+                        // big win
+                        worldMap[16][0] = 13;
                     }
                 }
             }
