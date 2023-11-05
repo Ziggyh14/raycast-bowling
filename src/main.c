@@ -521,7 +521,6 @@ int main(){
                             }
                             float v = (sprites[i].mass * sprites[i].vel) + 
                             (sprites[j].mass * sprites[j].vel * sprites[i].mass) + sprites[i].mass;
-                            printf("velcoty after collison of %d and %d: %f\n",i,j,v);
                             sprites[i].vel = v;
                             sprites[j].vel = v;
                             srand(SDL_GetTicks()<<j*217215);
