@@ -151,7 +151,7 @@ int main(){
         for(int y = 0; y<SCREEN_HEIGHT;y++){
 
             // rayDir for leftmost ray (x = 0) and rightmost ray (x = w)
-            float rayDirX0 = dirX - planeX+0.33;
+            float rayDirX0 = dirX - planeX;
             float rayDirY0 = dirY - planeY;
             float rayDirX1 = dirX + planeX;
             float rayDirY1 = dirY + planeY;
