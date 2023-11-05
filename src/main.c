@@ -21,8 +21,8 @@ int worldMap[10][20]=
   {1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
   {1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
   {1,0,0,0,0,0,0,0,0,1,4,4,4,4,4,4,4,4,4,1},
-  {1,1,3,0,0,0,1,0,0,1,0,0,0,0,0,0,0,0,0,0},
-  {3,3,3,3,5,5,5,3,3,3,0,0,0,0,0,0,0,0,0,0},
+  {1,1,1,0,0,0,1,0,0,1,0,0,0,0,0,0,0,0,0,0},
+  {3,3,3,5,5,5,5,3,3,3,0,0,0,0,0,0,0,0,0,0},
 };
 
 int* blank;
@@ -517,14 +517,14 @@ int main(){
                         
                     }
                 }
-                if(getKeyPressed(e) == SDLK_SPACE && numOfSprites > 0) {
+                if(getKeyPressed(e) == SDLK_SPACE && numOfSprites > 0 && posY < 9) {
                    charge+=0.03;
                 }
             }
             if(isKeyUp(e)){
                 if(getKeyPressed(e) == SDLK_SPACE && numOfSprites >0){
                       printf("space is release\n");
-                    if (heldSprite != -1) {
+                    if (heldSprite != -1 && posY < 9) {
                         play_Sample("res/rolling.wav",0);
                         sprites[heldSprite].dir = (fvec2) {dirX,dirY};
                         sprites[heldSprite].vel = min(0.5,charge);
