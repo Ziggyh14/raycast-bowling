@@ -4,6 +4,7 @@
 #include <SDL2/SDL_render.h>
 #include <SDL2/SDL_surface.h>
 #include <SDL2/SDL_image.h>
+#include <SDL2/SDL_ttf.h>
 #include "sample_func.h"
 #include <stdio.h>
 #include <stdlib.h>
@@ -26,6 +27,11 @@ int worldMap[10][20]=
 };
 
 int* blank;
+TTF_Font* font;
+SDL_Surface* msgSurface;
+SDL_Texture* msgTexture;
+
+long score;
 
 struct {
     SDL_Window* window;
@@ -33,7 +39,6 @@ struct {
     SDL_Renderer* rend;
     SDL_Texture* texture;
     ui32 pixels[(SCREEN_WIDTH*SCREEN_HEIGHT)*sizeof(int)];
-
 } state;
 
 void verline(int x, int y1, int y2,ui32 color){
@@ -119,6 +124,17 @@ int main(){
     state.texture = SDL_CreateTexture(state.rend,SDL_PIXELFORMAT_ARGB8888,SDL_TEXTUREACCESS_STREAMING,
                                      SCREEN_WIDTH, SCREEN_HEIGHT);
 
+    TTF_Init();
+    font = TTF_OpenFont("res/vga_font.ttf", 16);
+    if (font == NULL) {
+        fprintf(stderr, "Failed to load font - so text might not be visible: %s\n", TTF_GetError());
+    }
+    // This message doesn't change so just render it at the start
+    SDL_Color white = {255,255,255};
+    SDL_Surface* msgSurface = TTF_RenderText_Solid(font, "Press E to pick up, hold & release space to throw", white);
+    // Convert to surface (ugh)
+    SDL_Texture* msgTexture = SDL_CreateTextureFromSurface(state.rend, msgSurface);
+    
     init_Sample_Playback();
 
     play_Sample("res/jazz.wav",0);
@@ -484,6 +500,23 @@ int main(){
             SDL_RenderCopy(state.rend, sprites[heldSprite].texture, &srcRect, &destRect);
         }
         
+        // Render text
+        SDL_Rect destRect = {0, 0, msgSurface->w, msgSurface->h};
+        SDL_RenderCopy(state.rend, msgTexture, NULL, &destRect);
+        
+        // Render Score
+        SDL_Color black = {0,0,0};
+        char scoreStr[64] = {0};
+        snprintf(scoreStr, 63, "Score: %li", score);
+        SDL_Surface* scoreSurface = TTF_RenderText_Solid(font, scoreStr, black);
+        // Convert to surface (ugh)
+        SDL_Texture* scoreTexture = SDL_CreateTextureFromSurface(state.rend, scoreSurface);
+        SDL_Rect scoreRect = {SCREEN_WIDTH - scoreSurface->w, SCREEN_HEIGHT - scoreSurface->h, scoreSurface->w, scoreSurface->h};
+        SDL_RenderCopy(state.rend, scoreTexture, NULL, &scoreRect);
+        SDL_FreeSurface(scoreSurface);
+        SDL_DestroyTexture(scoreTexture);
+        
+        
         SDL_RenderPresent(state.rend);
         clearscreen();
 
@@ -577,6 +610,8 @@ int main(){
 
     close_Sample_Playback();
     SDL_DestroyTexture(state.texture);
+    SDL_FreeSurface(msgSurface);
+    SDL_DestroyTexture(msgTexture);
     SDL_DestroyRenderer(state.rend);
     SDL_DestroyWindow(state.window);
     
