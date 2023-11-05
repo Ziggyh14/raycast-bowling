@@ -51,6 +51,11 @@ int isKeyDown(SDL_Event event){
         return 1;
     return 0;
 }
+int isKeyUp(SDL_Event event){
+    if(event.type==SDL_KEYUP)
+        return 1;
+    return 0;
+}
 SDL_Keycode getKeyPressed(SDL_Event event){
     return event.key.keysym.sym;
 }
@@ -132,6 +137,8 @@ int main(){
     double dirX = 1,dirY = 0; //initial direction vector
     double planeX = 0, planeY = -0.66 ;//the 2d raycaster version of camera plane
 
+    float charge = 0;
+
     double time = 0; //time of current frame
     double oldTime = 0; //time of previous frame
 
@@ -162,6 +169,8 @@ int main(){
             sprites[i].pos = (fvec2) {4 - (i/5.0),5};
         }
         sprites[i].angle = 0;
+        sprites[i].dir = (fvec2){0,0};
+        sprites[i].vel = 0;
         char* imageFilePath;
         if (i == 0) imageFilePath = "res/ball.png";
         else if (i == 1) imageFilePath = "res/her.png";
@@ -377,6 +386,12 @@ int main(){
         // Reorder sprites in order of furthest to closest to the camera
         double spriteDists[numOfSprites];
         for(int i = 0; i < numOfSprites; i++) {
+            if(sprites[i].vel > 0){
+                sprites[i].pos = (fvec2) {sprites[i].pos.x + (sprites[i].dir.x * sprites[i].vel),
+                                          sprites[i].pos.y + (sprites[i].dir.y * sprites[i].vel)};
+                sprites[i].vel-=FRICTION_VAR;
+                max(0,sprites[i].vel);
+            }
             spriteDists[i] = spriteDistance(sprites[i], posX, posY);
         }
         
@@ -491,10 +506,24 @@ int main(){
                         }
                     } else {
                         // Put it down
-                        sprites[heldSprite].pos = (fvec2) {posX+0.1,posY+0.1};
+                        sprites[heldSprite].pos = (fvec2) {posX+(0.55*dirX),posY+(0.55*dirY)};
                         heldSprite = -1;
                         
                     }
+                }
+                if(getKeyPressed(e) == SDLK_SPACE && numOfSprites > 0) {
+                   charge+=0.03;
+                }
+            }
+            if(isKeyUp(e)){
+                if(getKeyPressed(e) == SDLK_SPACE && numOfSprites >0){
+                      printf("space is release\n");
+                    if (heldSprite != -1) {
+                        sprites[heldSprite].dir = (fvec2) {dirX,dirY};
+                        sprites[heldSprite].vel = min(0.5,charge);
+                        sprites[heldSprite].pos = (fvec2) {posX+(0.2*dirX),posY+(0.2*dirY)};
+                        heldSprite = -1;
+                    } 
                 }
             }
         }

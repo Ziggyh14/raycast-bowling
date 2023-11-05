@@ -9,6 +9,11 @@
 #define TEXTURE_WIDTH 64
 #define TEXTURE_HEIGHT 64
 
+#define FRICTION_VAR 0.002;
+#define max(a,b) ((a) > (b) ? (a) : (b))
+#define min(a,b) ((a) < (b) ? (a) : (b))
+
+
 
 typedef struct vector2 {
     ui32 x;
@@ -37,5 +42,7 @@ typedef struct Sprite {
     // Used for changing the texture based on where it's facing (not yet implemented)
     float angle;
     SDL_Texture* texture;
+    float vel;
+    fvec2 dir;
 } Sprite;
 #endif  // HEADER_H
