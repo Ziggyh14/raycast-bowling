@@ -2,6 +2,7 @@
 #include <SDL2/SDL_render.h>
 #include <SDL2/SDL_surface.h>
 #include <SDL2/SDL_image.h>
+#include "sample_func.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
@@ -88,6 +89,8 @@ int main(){
     size_t numOfSprites = 12;
     double zbuffer[SCREEN_WIDTH];
 
+    create_Table();
+
     if(SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO)){
         printf("error initializing SDL: %s\n", SDL_GetError());
         return 1;
@@ -106,6 +109,10 @@ int main(){
 
     state.texture = SDL_CreateTexture(state.rend,SDL_PIXELFORMAT_ARGB8888,SDL_TEXTUREACCESS_STREAMING,
                                      SCREEN_WIDTH, SCREEN_HEIGHT);
+
+    init_Sample_Playback();
+
+    play_Sample("res/jazz.wav",0);
 
     size_t numOfTextures = 7;
     WallTexture textures[numOfTextures];
@@ -503,6 +510,7 @@ int main(){
         free(textures[i].pixels);
     }
 
+    close_Sample_Playback();
     SDL_DestroyTexture(state.texture);
     SDL_DestroyRenderer(state.rend);
     SDL_DestroyWindow(state.window);
