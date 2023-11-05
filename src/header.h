@@ -37,6 +37,5 @@ typedef struct Sprite {
     // Used for changing the texture based on where it's facing (not yet implemented)
     float angle;
     SDL_Texture* texture;
-    int flag;
 } Sprite;
 #endif  // HEADER_H
