@@ -125,7 +125,7 @@ int main(){
     load_texture("res/wallgutter.png",&textures[5]);
     load_texture("res/wallrack.png",&textures[6]);
     
-
+    int playerflag = 0;
     double posX = 4.5, posY = 4.5;  //x and y start position
     double dirX = 1,dirY = 0; //initial direction vector
     double planeX = 0, planeY = -0.66 ;//the 2d raycaster version of camera plane
@@ -160,6 +160,7 @@ int main(){
             sprites[i].pos = (fvec2) {4 - (i/5.0),5};
         }
         sprites[i].angle = 0;
+        sprites[i].flag =0;
         char* imageFilePath;
         if (i == 0) imageFilePath = "res/ball.png";
         else if (i == 1) imageFilePath = "res/her.png";
@@ -490,8 +491,17 @@ int main(){
             if(worldMap[(int)(posX)][(int)(posY - dirY * moveSpeed)] == 0) posY -= dirY * moveSpeed;
         }
 
-        //process sprites
-        printf("%d,%d",posX,posY);
+        if(playerflag == 0 && sprites[0].flag == 0){
+            if((posX > sprites[0].pos.x -0.2 &&posX < sprites[0].pos.x +0.2) &&
+               (posY > sprites[0].pos.y -0.2 &&posY< sprites[0].pos.y +0.2)){
+                sprites[0].flag = 1;
+                playerflag = 1;
+               }
+        }
+        if(sprites[0].flag == 1){
+            sprites[0].pos = (fvec2) {posX+0.2,posY+0.2};
+        }
+        printf("(%f,%f),%d,%d\n",posX,posY,playerflag,sprites[0].flag);
     }
     
     // Free up sprites
