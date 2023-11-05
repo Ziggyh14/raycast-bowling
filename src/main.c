@@ -112,6 +112,8 @@ int main(){
 
     init_Sample_Playback();
 
+    play_Sample("res/jazz.wav",0);
+
     size_t numOfTextures = 7;
     WallTexture textures[numOfTextures];
 
@@ -484,6 +486,7 @@ int main(){
         free(textures[i].pixels);
     }
 
+    close_Sample_Playback();
     SDL_DestroyTexture(state.texture);
     SDL_DestroyRenderer(state.rend);
     SDL_DestroyWindow(state.window);
