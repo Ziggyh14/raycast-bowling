@@ -126,9 +126,9 @@ int main(){
     create_Table();
 
     if(SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO)){
-        printf("error initializing SDL: %s\n", SDL_GetError());
+        fprintf(stderr, "Error initializing SDL: %s\n", SDL_GetError());
         return 1;
-        }
+    }
     
 
     state.window =  SDL_CreateWindow(
@@ -527,7 +527,6 @@ int main(){
                             }
                             float v = (sprites[i].mass * sprites[i].vel) + 
                             (sprites[j].mass * sprites[j].vel * sprites[i].mass) + sprites[i].mass;
-                            printf("velcoty after collison of %d and %d: %f\n",i,j,v);
                             sprites[i].vel = v;
                             sprites[j].vel = v;
                             srand(SDL_GetTicks()<<j*217215);
@@ -713,7 +712,6 @@ int main(){
             
             if(isKeyDown(e)) {
                 if(getKeyPressed(e) == SDLK_e && numOfSprites > 0) {
-                    printf("E is pressed\n");
                     if (heldSprite == -1) {
                         // Not holding anything
                         // Get the closest sprite
