@@ -131,7 +131,7 @@ int main(){
     
 
     state.window =  SDL_CreateWindow(
-            "Raycast Bowling",
+            "Bowlling Bowl 3D",
             SDL_WINDOWPOS_CENTERED_DISPLAY(0),
             SDL_WINDOWPOS_CENTERED_DISPLAY(0),
             SCREEN_WIDTH,
@@ -661,7 +661,8 @@ int main(){
         for(int i = 0; i < numOfSprites; i++) {
             if(sprites[i].origIndex == 0) {
                 ballSprite = &sprites[i];
-                if(ballSprite->pos.y > 20){
+                if(ballSprite->pos.y > 20 || ballSprite->pos.y <0||
+                    ballSprite->pos.x > 20 || ballSprite->pos.x<0){
                    ballSprite->pos = (fvec2) {9.5,5.5};
                    ballSprite->vel = 0;
                 }
