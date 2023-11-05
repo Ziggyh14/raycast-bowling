@@ -589,9 +589,6 @@ int main(){
                         
                     }
                 }
-                if(getKeyPressed(e) == SDLK_SPACE && numOfSprites > 0 && posY < BOUNDARY_LINE) {
-                   charge+=0.03;
-                }
             }
             if(isKeyUp(e)){
                 if(getKeyPressed(e) == SDLK_SPACE && numOfSprites >0){
@@ -632,6 +629,9 @@ int main(){
         if(keys[SDL_SCANCODE_DOWN]){
             if(worldMap[(int)(posX - dirX * moveSpeed)][(int)(posY)] == 0) posX -= dirX * moveSpeed;
             if(worldMap[(int)(posX)][(int)(posY - dirY * moveSpeed)] == 0) posY -= dirY * moveSpeed;
+        }
+        if(keys[SDL_SCANCODE_SPACE] && numOfSprites > 0 && posY < BOUNDARY_LINE) {
+            charge+=0.03;
         }
     }
     
