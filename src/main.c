@@ -12,6 +12,8 @@
 #include "header.h"
 #define QUIT_CHECK if(SDL_QuitRequested()){break;}
 
+#define BOUNDARY_LINE 9
+
 int worldMap[10][20]=
 {
   {1,1,1,1,2,1,1,5,5,1,0,0,0,0,0,0,0,0,0,0},
@@ -32,6 +34,7 @@ SDL_Surface* msgSurface;
 SDL_Texture* msgTexture;
 
 long score;
+int overTheLine;
 
 struct {
     SDL_Window* window;
@@ -505,10 +508,16 @@ int main(){
         SDL_RenderCopy(state.rend, msgTexture, NULL, &destRect);
         
         // Render Score
-        SDL_Color black = {0,0,0};
+        SDL_Color colour = {0};
         char scoreStr[64] = {0};
-        snprintf(scoreStr, 63, "Score: %li", score);
-        SDL_Surface* scoreSurface = TTF_RenderText_Solid(font, scoreStr, black);
+        if (posY >= BOUNDARY_LINE) {
+            colour.r = 232; colour.g = 23; colour.b = 51;
+            snprintf(scoreStr, 63, "You're over the line!");
+        } else {
+            colour.r = 0; colour.g = 0; colour.b = 0;
+            snprintf(scoreStr, 63, "Score: %li", score);
+        }
+        SDL_Surface* scoreSurface = TTF_RenderText_Solid(font, scoreStr, colour);
         // Convert to surface (ugh)
         SDL_Texture* scoreTexture = SDL_CreateTextureFromSurface(state.rend, scoreSurface);
         SDL_Rect scoreRect = {SCREEN_WIDTH - scoreSurface->w, SCREEN_HEIGHT - scoreSurface->h, scoreSurface->w, scoreSurface->h};
@@ -550,21 +559,20 @@ int main(){
                         
                     }
                 }
-                if(getKeyPressed(e) == SDLK_SPACE && numOfSprites > 0 && posY < 9) {
+                if(getKeyPressed(e) == SDLK_SPACE && numOfSprites > 0 && posY < BOUNDARY_LINE) {
                    charge+=0.03;
                 }
             }
             if(isKeyUp(e)){
                 if(getKeyPressed(e) == SDLK_SPACE && numOfSprites >0){
-                      printf("space is release\n");
-                    if (heldSprite != -1 && posY < 9) {
+                    if (heldSprite != -1 && posY < BOUNDARY_LINE) {
                         play_Sample("res/rolling.wav",0);
                         sprites[heldSprite].dir = (fvec2) {dirX,dirY};
                         sprites[heldSprite].vel = min(0.5,charge);
                         charge = 0;
                         sprites[heldSprite].pos = (fvec2) {posX+(0.2*dirX),posY+(0.2*dirY)};
                         heldSprite = -1;
-                    } 
+                    }
                 }
             }
         }
@@ -595,8 +603,6 @@ int main(){
             if(worldMap[(int)(posX - dirX * moveSpeed)][(int)(posY)] == 0) posX -= dirX * moveSpeed;
             if(worldMap[(int)(posX)][(int)(posY - dirY * moveSpeed)] == 0) posY -= dirY * moveSpeed;
         }
-
-
     }
     
     // Free up sprites
