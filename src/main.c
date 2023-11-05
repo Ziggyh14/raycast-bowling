@@ -112,7 +112,7 @@ void load_texture(const char* file, WallTexture* dest){
 
 int main(){
     Sprite* sprites = NULL;
-    size_t numOfSprites = 58;
+    size_t numOfSprites = 60;
     int* hitSprites;
     double zbuffer[SCREEN_WIDTH];
     
@@ -203,6 +203,8 @@ int main(){
 
         {18.5,18.5},
 
+        {7.5,1.5},
+
         {9.25, 18},
         {9.75, 18},
         {10.25, 18},
@@ -281,13 +283,17 @@ int main(){
             imageFilePath = "res/ball.png";
             mass = BALL_MASS;
         }
-        else if (i <= 1){ 
+        else if (i == 1){ 
             imageFilePath = "res/her.png";
             mass = HER_MASS;
         }
-        else if (i<= 2){
+        else if (i== 2){
             imageFilePath = "res/error.png";
             mass = BALL_MASS*2;
+        }
+        else if(i==3){
+            imageFilePath = "res/shoevendor.png";
+            mass = 0.7;
         }
         else {
             imageFilePath = "res/pin.png";
