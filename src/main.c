@@ -525,6 +525,7 @@ int main(){
                 if(getKeyPressed(e) == SDLK_SPACE && numOfSprites >0){
                       printf("space is release\n");
                     if (heldSprite != -1) {
+                        play_Sample("res/rolling.wav",0);
                         sprites[heldSprite].dir = (fvec2) {dirX,dirY};
                         sprites[heldSprite].vel = min(0.5,charge);
                         charge = 0;
