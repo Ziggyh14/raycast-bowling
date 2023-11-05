@@ -1,5 +1,6 @@
 #include <SDL2/SDL_keyboard.h>
 #include <SDL2/SDL_keycode.h>
+#include <SDL2/SDL_rect.h>
 #include <SDL2/SDL_render.h>
 #include <SDL2/SDL_surface.h>
 #include <SDL2/SDL_image.h>
@@ -476,6 +477,15 @@ int main(){
                     SDL_RenderCopy(state.rend, sprites[i].texture, &srcRect, &destRect);
                 }
             }
+        }
+        
+        if (heldSprite != -1) {
+            // Show it in our “hand” if we're holding something
+            int w, h;
+            SDL_QueryTexture(sprites[heldSprite].texture, NULL, NULL, &w, &h);
+            SDL_Rect srcRect = {0, 0, w * 2 / 3, h * 2 / 3};
+            SDL_Rect destRect = {SCREEN_WIDTH * 0.7, SCREEN_HEIGHT - (SCREEN_WIDTH * 0.3), SCREEN_WIDTH * 0.3, SCREEN_WIDTH * 0.3};
+            SDL_RenderCopy(state.rend, sprites[heldSprite].texture, &srcRect, &destRect);
         }
         
         SDL_RenderPresent(state.rend);
