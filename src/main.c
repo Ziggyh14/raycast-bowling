@@ -72,7 +72,6 @@ void load_texture(const char* file, WallTexture* dest){
         exit(1);
     }
     SDL_LockSurface(s1);
-    printf("%d\n",s1->format->BytesPerPixel);
     dest->pixels = malloc((dest->width*dest->height)*sizeof(ui32));
     if (dest->pixels == NULL) {
         fprintf(stderr, "load_texture: Failed to allocate memory!");
