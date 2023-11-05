@@ -410,7 +410,7 @@ int main(){
                 sprites[i].pos = (fvec2) {sprites[i].pos.x + (sprites[i].dir.x * sprites[i].vel),
                                           sprites[i].pos.y + (sprites[i].dir.y * sprites[i].vel)};
                 sprites[i].vel-=FRICTION_VAR;
-                max(0,sprites[i].vel);
+                sprites[i].vel = max(0,sprites[i].vel);
             }
             spriteDists[i] = spriteDistance(sprites[i], posX, posY);
         }
