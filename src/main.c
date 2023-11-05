@@ -85,7 +85,7 @@ void load_texture(const char* file, WallTexture* dest){
 
 int main(){
     Sprite* sprites = NULL;
-    size_t numOfSprites = 0;
+    size_t numOfSprites = 11;
     int zbuffer[SCREEN_WIDTH];
 
     if(SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO)){
@@ -203,7 +203,7 @@ int main(){
 
         for(int x = 0; x < SCREEN_WIDTH; x++)  
         {
-            double cameraX = (2 * x / (double) (SCREEN_WIDTH - 1))-0.66; //x-coordinate in camera space
+            double cameraX = 2 * (x / (double) (SCREEN_WIDTH - 1)) - 1; //x-coordinate in camera space
             double rayDirX = (dirX + planeX * cameraX) ;
             double rayDirY = (dirY + planeY * cameraX) ;
 
