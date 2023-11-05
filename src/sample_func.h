@@ -37,8 +37,6 @@ typedef struct SampleQueue{
     int channel;
 } SampleQueue;
 
-int queue_Count; // Amount of queues initialised
-
 /*
 Initialse a SampleQueue and return a pointer to it
 - samples in the queue are played on thier own channel, meaning other samples can be played without disturbing the queue

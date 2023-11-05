@@ -1,5 +1,6 @@
 #include "sample_func.h"
 
+int queue_Count; // Amount of queues initialised
 
 void init_Sample_Playback(){ //todo make init variables parameters
     

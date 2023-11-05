@@ -7,7 +7,6 @@
 
 #define TABLE_CAPACITY 50
 
-#endif
 //Test for a hash table for allocated samples
 
 typedef struct Entry {
@@ -23,8 +22,6 @@ typedef struct Table {
     int length;
 
 } Table;
-
-Table* ht;
 
 Table* create_Table(void);
 
@@ -47,4 +44,4 @@ unsigned long djb2_hash(const char *str);
 
 void print_ht();
 
-
+#endif
