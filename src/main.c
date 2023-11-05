@@ -1,3 +1,4 @@
+#include <SDL2/SDL.h>
 #include <SDL2/SDL_keyboard.h>
 #include <SDL2/SDL_keycode.h>
 #include <SDL2/SDL_rect.h>
@@ -515,7 +516,7 @@ int main(){
                 sprites[i].pos = (fvec2) {sprites[i].pos.x + ((sprites[i].dir.x)* (sprites[i].vel *sprites[i].mass)),
                                           sprites[i].pos.y + ((sprites[i].dir.y)* (sprites[i].vel *sprites[i].mass))};
                 sprites[i].vel-=FRICTION_VAR;
-                max(0,sprites[i].vel);
+                //max(0,sprites[i].vel);
 
                 for (int j = 0; j < numOfSprites; j++) {
                     if(j!=i){
@@ -700,7 +701,7 @@ int main(){
                     }
                     if(score >= (numOfSprites - 1) && !cheater) {
                         // big win
-                        worldMap[19][3] = 14;
+                        worldMap[19][2] = 14;
                     }
                 }
             }
@@ -805,6 +806,7 @@ int main(){
         SDL_DestroyTexture(sprites[i].texture);
     }
     free(sprites);
+    free(hitSprites);
     numOfSprites = 0;
     
     for(int i = 0; i < numOfTextures; i++) {
@@ -817,6 +819,8 @@ int main(){
     SDL_DestroyTexture(msgTexture);
     SDL_DestroyRenderer(state.rend);
     SDL_DestroyWindow(state.window);
+    
+    SDL_Quit();
     
     return 0;
 
