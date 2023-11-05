@@ -85,7 +85,7 @@ void load_texture(const char* file, WallTexture* dest){
 
 int main(){
     Sprite* sprites = NULL;
-    size_t numOfSprites = 11;
+    size_t numOfSprites = 12;
     double zbuffer[SCREEN_WIDTH];
 
     if(SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO)){
@@ -128,13 +128,15 @@ int main(){
     sprites = malloc(numOfSprites * sizeof(Sprite));
     
     // Initialise sprites
-    for(int i = 0; i < numOfSprites; i++) {
+    for(int i = 0; i < numOfSprites-1; i++) {
         sprites[i].pos = (fvec2) { 3 + (i / 3.0),18};
         sprites[i].angle = 0;
         char* imageFilePath = i == 0 ? "res/ball.png" : "res/pin.png";
         sprites[i].texture = IMG_LoadTexture(state.rend, imageFilePath);
     }
-    
+    sprites[11].pos = (fvec2) {6,9};
+    sprites[11].angle = 0;
+    sprites[11].texture = IMG_LoadTexture(state.rend,"res/her.png");    
 
     while(1){
         QUIT_CHECK;
