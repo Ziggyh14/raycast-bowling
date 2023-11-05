@@ -147,7 +147,7 @@ int main(){
     
     double initSpritePositions[][2] = {
         {8.5, 4.5},
-        {2.0,2.0},
+        {4.0, 9.0},
         {4.25, 18},
         {4.75, 18},
         {5.25, 18},
@@ -178,10 +178,6 @@ int main(){
         else imageFilePath = "res/pin.png";
         sprites[i].texture = IMG_LoadTexture(state.rend, imageFilePath);
     }
-    sprites[11].pos = (fvec2) {6,9};
-    sprites[11].angle = 0;
-    sprites[11].texture = IMG_LoadTexture(state.rend,"res/her.png");    
-
     while(1){
         QUIT_CHECK;
         // Wait until the 2nd frame to slow down
