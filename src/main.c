@@ -95,7 +95,7 @@ int main(){
     
 
     state.window =  SDL_CreateWindow(
-            "game",
+            "Raycast Bowling",
             SDL_WINDOWPOS_CENTERED_DISPLAY(0),
             SDL_WINDOWPOS_CENTERED_DISPLAY(0),
             SCREEN_WIDTH,
