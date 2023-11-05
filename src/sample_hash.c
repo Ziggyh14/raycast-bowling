@@ -12,7 +12,7 @@ Table* create_Table(void){
 
     ht->capacity = TABLE_CAPACITY;
     ht->length = 0;
-    ht->entries = malloc(ht->capacity * sizeof(Entry*));
+    ht->entries = calloc(ht->capacity, sizeof(Entry*));
 
     if (ht->entries == NULL){
         printf("ERROR: ENTRIES NOT CREATED\n");
@@ -74,7 +74,7 @@ Entry* hash_lookup (const char* file){
         -RETURN entry
     */
 
-    if(*e != NULL){
+    if(e != NULL && *e != NULL){
         if((strcmp((*e)->file,file)) == 0)
                 return *e;
 

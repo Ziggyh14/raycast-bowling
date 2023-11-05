@@ -91,13 +91,13 @@ void load_texture(const char* file, WallTexture* dest){
         exit(1);
     }
     SDL_Surface* s1 = SDL_ConvertSurfaceFormat(s, SDL_PIXELFORMAT_ARGB8888, 0);
-    dest->width = s1->w;
-    dest->height = s1->h;
-    SDL_FreeSurface(s);
     if (s1 == NULL) {
         fprintf(stderr, "Failed to convert %s, %s\n",file, SDL_GetError());
         exit(1);
     }
+    dest->width = s1->w;
+    dest->height = s1->h;
+    SDL_FreeSurface(s);
     SDL_LockSurface(s1);
     dest->pixels = malloc((dest->width*dest->height)*sizeof(ui32));
     if (dest->pixels == NULL) {
@@ -160,7 +160,7 @@ int main(){
     play_Sample("res/amb.wav",-1);
     
 
-    size_t numOfTextures = 15;
+    size_t numOfTextures = 16;
     WallTexture textures[numOfTextures];
 
     load_texture("res/floor.png",&textures[0]);
