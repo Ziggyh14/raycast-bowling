@@ -126,9 +126,9 @@ int main(){
     create_Table();
 
     if(SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO)){
-        printf("error initializing SDL: %s\n", SDL_GetError());
+        fprintf(stderr, "Error initializing SDL: %s\n", SDL_GetError());
         return 1;
-        }
+    }
     
 
     state.window =  SDL_CreateWindow(
