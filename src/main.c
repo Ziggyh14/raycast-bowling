@@ -181,7 +181,7 @@ int main(){
     load_texture("res/exit_open.png", &textures[15]);
 
     
-    double posX = 4.5, posY = 4.5;  //x and y start position
+    double posX = 4.5, posY = 5.5;  //x and y start position
     double dirX = 1,dirY = 0; //initial direction vector
     double planeX = 0, planeY = -0.66 ;//the 2d raycaster version of camera plane
 
