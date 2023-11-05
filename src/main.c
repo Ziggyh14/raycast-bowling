@@ -129,7 +129,7 @@ int main(){
     sprites = malloc(numOfSprites * sizeof(Sprite));
     // Initialise sprites
     for(int i = 0; i < numOfSprites; i++) {
-        sprites[i].pos = (fvec2) {4.0 - i / 10.0, 5.0};
+        sprites[i].pos = (fvec2) { 3 + (i / 3.0),18};
         sprites[i].angle = 0;
         char* imageFilePath = i == 0 ? "res/ball.png" : "res/pin.png";
         sprites[i].texture = IMG_LoadTexture(state.rend, imageFilePath);
@@ -153,13 +153,13 @@ int main(){
         for(int y = 0; y<SCREEN_HEIGHT;y++){
 
             // rayDir for leftmost ray (x = 0) and rightmost ray (x = w)
-            float rayDirX0 = dirX - planeX;
+            float rayDirX0 = dirX - planeX+0.33;
             float rayDirY0 = dirY - planeY;
             float rayDirX1 = dirX + planeX;
             float rayDirY1 = dirY + planeY;
 
             // horizon
-            int p = y -SCREEN_HEIGHT /2;
+            int p = (y - SCREEN_HEIGHT /2);
             //vert pos of camera
             float posZ = 0.5 *SCREEN_HEIGHT;
 
@@ -170,9 +170,9 @@ int main(){
             float floorStepX = rowDistance * (rayDirX1 - rayDirX0) / SCREEN_WIDTH;
             float floorStepY = rowDistance * (rayDirY1 - rayDirY0) / SCREEN_WIDTH;
 
-                    // real world coordinates of the leftmost column. This will be updated as we step to the right.
-            float floorX = posX + rowDistance * rayDirX0;
-            float floorY = posY + rowDistance * rayDirY0;
+            // real world coordinates of the leftmost column. This will be updated as we step to the right.
+            float floorX = posX + rowDistance* rayDirX0;
+            float floorY = posY + rowDistance* rayDirY0;
 
             for(int x = 0; x < SCREEN_WIDTH; ++x)
             {
@@ -181,8 +181,8 @@ int main(){
                 int cellY = (int)(floorY);
 
                 // get the texture coordinate from the fractional part
-                int tx = (int)(textures[0].width * (floorX - cellX)) & (textures[0].height - 1);
-                int ty = (int)(textures[0].width * (floorY - cellY)) & (textures[0].height - 1);
+                int tx = (int)(textures[0].width * (floorX-cellX)) & (textures[0].width-1);
+                int ty = (int)(textures[0].height * (floorY-cellY)) &(textures[0].height-1);
 
                 floorX += floorStepX;
                 floorY += floorStepY;

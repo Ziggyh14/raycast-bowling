@@ -4,8 +4,8 @@
 #include <SDL2/SDL.h>
 #define ui32 __uint32_t
 
-#define SCREEN_WIDTH  640 //1020
-#define SCREEN_HEIGHT 420 // 720
+#define SCREEN_WIDTH  1020
+#define SCREEN_HEIGHT 720
 #define TEXTURE_WIDTH 64
 #define TEXTURE_HEIGHT 64
 
