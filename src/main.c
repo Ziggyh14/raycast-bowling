@@ -10,8 +10,8 @@
 
 int worldMap[10][20]=
 {
-  {1,1,1,1,2,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0},
-  {1,0,0,0,0,0,1,0,0,1,0,0,0,0,0,0,0,0,0,0},
+  {1,1,1,1,2,1,1,5,5,1,0,0,0,0,0,0,0,0,0,0},
+  {1,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0},
   {1,0,1,0,0,0,0,0,0,1,4,4,4,4,4,4,4,4,4,4},
   {1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
   {1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
@@ -19,7 +19,7 @@ int worldMap[10][20]=
   {1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
   {1,1,0,0,0,0,0,0,0,1,4,4,4,4,4,4,4,4,4,1},
   {1,0,0,0,1,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0},
-  {3,3,3,3,3,3,3,3,3,3,0,0,0,0,0,0,0,0,0,0},
+  {3,3,3,3,3,3,2,5,5,3,0,0,0,0,0,0,0,0,0,0},
 };
 
 int* blank;
@@ -107,7 +107,7 @@ int main(){
     state.texture = SDL_CreateTexture(state.rend,SDL_PIXELFORMAT_ARGB8888,SDL_TEXTUREACCESS_STREAMING,
                                      SCREEN_WIDTH, SCREEN_HEIGHT);
 
-    size_t numOfTextures = 6;
+    size_t numOfTextures = 7;
     WallTexture textures[numOfTextures];
 
     load_texture("res/floor.png",&textures[0]);
@@ -116,6 +116,7 @@ int main(){
     load_texture("res/wallsign.png",&textures[3]);
     load_texture("res/bowling.png",&textures[4]);
     load_texture("res/wallgutter.png",&textures[5]);
+    load_texture("res/wallrack.png",&textures[6]);
     
 
     double posX = 5, posY = 5;  //x and y start position
