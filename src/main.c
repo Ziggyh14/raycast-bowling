@@ -17,9 +17,9 @@ int worldMap[10][20]=
   {1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
   {1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
   {1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
-  {1,1,0,0,0,0,0,0,0,1,4,4,4,4,4,4,4,4,4,1},
-  {1,0,0,0,1,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0},
-  {3,3,3,3,3,3,2,5,5,3,0,0,0,0,0,0,0,0,0,0},
+  {1,0,0,0,0,0,0,0,0,1,4,4,4,4,4,4,4,4,4,1},
+  {1,1,1,0,0,0,1,0,0,1,0,0,0,0,0,0,0,0,0,0},
+  {3,3,3,3,3,3,3,3,3,3,0,0,0,0,0,0,0,0,0,0},
 };
 
 int* blank;
@@ -119,20 +119,44 @@ int main(){
     load_texture("res/wallrack.png",&textures[6]);
     
 
-    double posX = 5, posY = 5;  //x and y start position
-    double dirX = -1,dirY = 0; //initial direction vector
-    double planeX = 0, planeY = 0.66 ;//the 2d raycaster version of camera plane
+    double posX = 4.5, posY = 4.5;  //x and y start position
+    double dirX = 1,dirY = 0; //initial direction vector
+    double planeX = 0, planeY = -0.66 ;//the 2d raycaster version of camera plane
 
     double time = 0; //time of current frame
     double oldTime = 0; //time of previous frame
 
     sprites = malloc(numOfSprites * sizeof(Sprite));
     
+    double initSpritePositions[][2] = {
+        {8.5, 4.5},
+        {2.0,2.0},
+        {4.25, 18},
+        {4.75, 18},
+        {5.25, 18},
+        {5.75, 18},
+        {4.5, 17},
+        {5.0, 17},
+        {5.5, 17},
+        {4.75, 16},
+        {5.25, 16},
+        {5.0, 15}
+    };
+    
     // Initialise sprites
-    for(int i = 0; i < numOfSprites-1; i++) {
-        sprites[i].pos = (fvec2) { 3 + (i / 3.0),18};
+    for(int i = 0; i < numOfSprites; i++) {
+        if (i < sizeof(initSpritePositions) / (sizeof(double)*2)) {
+            sprites[i].pos.x = initSpritePositions[i][0];
+            sprites[i].pos.y = initSpritePositions[i][1];
+        } else {
+            // Right in front of the player
+            sprites[i].pos = (fvec2) {4 - (i/5.0),5};
+        }
         sprites[i].angle = 0;
-        char* imageFilePath = i == 0 ? "res/ball.png" : "res/pin.png";
+        char* imageFilePath;
+        if (i == 0) imageFilePath = "res/ball.png";
+        else if (i == 1) imageFilePath = "res/her.png";
+        else imageFilePath = "res/pin.png";
         sprites[i].texture = IMG_LoadTexture(state.rend, imageFilePath);
     }
     sprites[11].pos = (fvec2) {6,9};
