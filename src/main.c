@@ -43,7 +43,8 @@ TTF_Font* font;
 SDL_Surface* msgSurface;
 SDL_Texture* msgTexture;
 
-long score;
+long score = 0;
+long ballThrows = 0;
 int overTheLine;
 
 struct {
@@ -628,7 +629,7 @@ int main(){
             snprintf(scoreStr, 63, "Charge: %.0f%%", min(100.0, charge / 0.5 * 100.0));
         } else {
             colour.r = 0; colour.g = 0; colour.b = 0;
-            snprintf(scoreStr, 63, "Score: %li", score);
+            snprintf(scoreStr, 63, "Score: %li / Balls: %li", score, ballThrows);
         }
         SDL_Surface* scoreSurface = TTF_RenderText_Solid(font, scoreStr, colour);
         // Convert to surface (ugh)
@@ -709,6 +710,7 @@ int main(){
                 if(getKeyPressed(e) == SDLK_SPACE && numOfSprites >0){
                     if (heldSprite != -1 && posY < BOUNDARY_LINE) {
                         play_Sample("res/rolling.wav",0);
+                        ballThrows++;
                         sprites[heldSprite].dir = (fvec2) {dirX,dirY};
                         sprites[heldSprite].vel = min(0.3,charge);
                         charge = 0;
