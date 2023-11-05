@@ -483,8 +483,8 @@ int main(){
             // Show it in our “hand” if we're holding something
             int w, h;
             SDL_QueryTexture(sprites[heldSprite].texture, NULL, NULL, &w, &h);
-            SDL_Rect srcRect = {0, 0, w * 2 / 3, h * 2 / 3};
-            SDL_Rect destRect = {SCREEN_WIDTH * 0.7, SCREEN_HEIGHT - (SCREEN_WIDTH * 0.3), SCREEN_WIDTH * 0.3, SCREEN_WIDTH * 0.3};
+            SDL_Rect srcRect = {w / 3, 0, w * 2 / 3, h * 2 / 3};
+            SDL_Rect destRect = {0, SCREEN_HEIGHT - (SCREEN_WIDTH * 0.3), SCREEN_WIDTH * 0.3, SCREEN_WIDTH * 0.3};
             SDL_RenderCopy(state.rend, sprites[heldSprite].texture, &srcRect, &destRect);
         }
         
