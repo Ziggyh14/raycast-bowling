@@ -633,7 +633,8 @@ int main(){
             // Skip the ball
             if (sprites[i].origIndex == 0)
                 continue;
-            if( pow(sprites[i].pos.x - ballSprite->pos.x, 2) + pow(sprites[i].pos.y - ballSprite->pos.y, 2) < 0.5 ) {
+            //if( pow(sprites[i].pos.x - ballSprite->pos.x, 2) + pow(sprites[i].pos.y - ballSprite->pos.y, 2) < 0.5 ) {
+            if (sprites[i].pos.y > 20) {
                 if(hitSprites[sprites[i].origIndex] == 0) {
                     hitSprites[sprites[i].origIndex] = 1;
                     score += 1;
