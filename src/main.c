@@ -347,14 +347,6 @@ int main(){
                 if(side == 1) color = (color >> 1) & 8355711;
                 state.pixels[(SCREEN_WIDTH *y)+x] = color;
             }
-            /*
-            ui32 colour = 0x0000ff;
-            if(side == 1)
-                colour = 0x0000B8;
-            //verline(x, 0, drawStart, 0xFF202020);
-            verline(x, drawStart, drawEnd,colour);
-            //verline(x, drawEnd, SCREEN_HEIGHT - 1, 0xFF505050);
-            */
 
             // Set the Z buffer for sprite casting
             zbuffer[x] = perpWallDist;
