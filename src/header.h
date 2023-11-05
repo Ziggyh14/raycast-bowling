@@ -49,5 +49,6 @@ typedef struct Sprite {
     float vel;
     fvec2 dir;
     float mass;
+    int origIndex;
 } Sprite;
 #endif  // HEADER_H

@@ -12,6 +12,8 @@
 #include "header.h"
 #define QUIT_CHECK if(SDL_QuitRequested()){break;}
 
+#define BOUNDARY_LINE 9
+
 int worldMap[10][20]=
 {
   {1,1,1,1,2,1,1,5,5,1,0,0,0,0,0,0,0,0,0,0},
@@ -32,6 +34,7 @@ SDL_Surface* msgSurface;
 SDL_Texture* msgTexture;
 
 long score;
+int overTheLine;
 
 struct {
     SDL_Window* window;
@@ -99,6 +102,7 @@ void load_texture(const char* file, WallTexture* dest){
 int main(){
     Sprite* sprites = NULL;
     size_t numOfSprites = 12;
+    int* hitSprites;
     double zbuffer[SCREEN_WIDTH];
 
     int heldSprite = -1;
@@ -161,6 +165,8 @@ int main(){
     double oldTime = 0; //time of previous frame
 
     sprites = malloc(numOfSprites * sizeof(Sprite));
+    hitSprites = calloc(numOfSprites, sizeof(Sprite));
+    hitSprites[0] = 1;
     
     double initSpritePositions[][2] = {
         {8.5, 4.5},
@@ -179,6 +185,7 @@ int main(){
     
     // Initialise sprites
     for(int i = 0; i < numOfSprites; i++) {
+        sprites[i].origIndex = i;
         if (i < sizeof(initSpritePositions) / (sizeof(double)*2)) {
             sprites[i].pos.x = initSpritePositions[i][0];
             sprites[i].pos.y = initSpritePositions[i][1];
@@ -539,10 +546,19 @@ int main(){
         SDL_RenderCopy(state.rend, msgTexture, NULL, &destRect);
         
         // Render Score
-        SDL_Color black = {0,0,0};
+        SDL_Color colour = {0};
         char scoreStr[64] = {0};
-        snprintf(scoreStr, 63, "Score: %li", score);
-        SDL_Surface* scoreSurface = TTF_RenderText_Solid(font, scoreStr, black);
+        if (posY >= BOUNDARY_LINE) {
+            colour.r = 232; colour.g = 23; colour.b = 51;
+            snprintf(scoreStr, 63, "You're over the line!");
+        } else if (charge > 0.03) {
+            colour.r = 128; colour.g = 255; colour.b = 128;
+            snprintf(scoreStr, 63, "Charge: %.0f%%", min(100.0, charge / 0.5 * 100.0));
+        } else {
+            colour.r = 0; colour.g = 0; colour.b = 0;
+            snprintf(scoreStr, 63, "Score: %li", score);
+        }
+        SDL_Surface* scoreSurface = TTF_RenderText_Solid(font, scoreStr, colour);
         // Convert to surface (ugh)
         SDL_Texture* scoreTexture = SDL_CreateTextureFromSurface(state.rend, scoreSurface);
         SDL_Rect scoreRect = {SCREEN_WIDTH - scoreSurface->w, SCREEN_HEIGHT - scoreSurface->h, scoreSurface->w, scoreSurface->h};
@@ -553,6 +569,29 @@ int main(){
         
         SDL_RenderPresent(state.rend);
         clearscreen();
+        
+        // Check which sprites the ball is hitting
+        // Find the ball sprite
+        Sprite* ballSprite = NULL;
+        for(int i = 0; i < numOfSprites; i++) {
+            if(sprites[i].origIndex == 0) {
+                ballSprite = &sprites[i];
+                break;
+            }
+        }
+        if (ballSprite == NULL) exit(2);
+        
+        for(int i = 0; i < numOfSprites; i++) {
+            // Skip the ball
+            if (sprites[i].origIndex == 0)
+                continue;
+            if( pow(sprites[i].pos.x - ballSprite->pos.x, 2) + pow(sprites[i].pos.y - ballSprite->pos.y, 2) < 0.5 ) {
+                if(hitSprites[sprites[i].origIndex] == 0) {
+                    hitSprites[sprites[i].origIndex] = 1;
+                    score += 1;
+                }
+            }
+        }
 
         SDL_Event e;
         while(SDL_PollEvent(&e)){
@@ -584,21 +623,17 @@ int main(){
                         
                     }
                 }
-                if(getKeyPressed(e) == SDLK_SPACE && numOfSprites > 0 && posY < 9) {
-                   charge+=0.03;
-                }
             }
             if(isKeyUp(e)){
                 if(getKeyPressed(e) == SDLK_SPACE && numOfSprites >0){
-                      printf("space is release\n");
-                    if (heldSprite != -1 && posY < 9) {
+                    if (heldSprite != -1 && posY < BOUNDARY_LINE) {
                         play_Sample("res/rolling.wav",0);
                         sprites[heldSprite].dir = (fvec2) {dirX,dirY};
                         sprites[heldSprite].vel = min(0.5,charge);
                         charge = 0;
                         sprites[heldSprite].pos = (fvec2) {posX+(0.2*dirX),posY+(0.2*dirY)};
                         heldSprite = -1;
-                    } 
+                    }
                 }
             }
         }
@@ -629,9 +664,9 @@ int main(){
             if(worldMap[(int)(posX - dirX * moveSpeed)][(int)(posY)] == 0) posX -= dirX * moveSpeed;
             if(worldMap[(int)(posX)][(int)(posY - dirY * moveSpeed)] == 0) posY -= dirY * moveSpeed;
         }
-
-
-    
+        if(keys[SDL_SCANCODE_SPACE] && numOfSprites > 0 && posY < BOUNDARY_LINE) {
+            charge+=0.03;
+        }
     }
     
     // Free up sprites
