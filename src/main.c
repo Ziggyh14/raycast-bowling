@@ -245,7 +245,7 @@ int main(){
             imageFilePath = "res/ball.png";
             mass = BALL_MASS;
         }
-        else if (i <= 11){ 
+        else if (i <= 1){ 
             imageFilePath = "res/her.png";
             mass = HER_MASS;
         }
