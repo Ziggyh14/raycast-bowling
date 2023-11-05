@@ -85,7 +85,7 @@ void load_texture(const char* file, WallTexture* dest){
 
 int main(){
     Sprite* sprites = NULL;
-    size_t numOfSprites = 11;
+    size_t numOfSprites = 0;
     int zbuffer[SCREEN_WIDTH];
 
     if(SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO)){
@@ -137,7 +137,6 @@ int main(){
 
     while(1){
         QUIT_CHECK;
-        time = SDL_GetTicks();
         // Wait until the 2nd frame to slow down
         if (oldTime != 0) {
             double minFrameTime = 1000.0 / 60.0; /* 60 fps */
@@ -331,8 +330,8 @@ int main(){
         time = SDL_GetTicks();
         double frameTime = (time - oldTime) / 1000.0; //frameTime is the time this frame has taken, in seconds
     //speed modifiers
-        double moveSpeed = frameTime * 10.0; //the constant value is in squares/second
-        double rotSpeed = frameTime * 6.0; //the constant value is in radians/second
+        double moveSpeed = frameTime * 5.0; //the constant value is in squares/second
+        double rotSpeed = frameTime * 3.0; //the constant value is in radians/second
        
         int texture_pitch = 0;
         void* texture_pixels = NULL;
@@ -463,8 +462,6 @@ int main(){
             if(worldMap[(int)(posX - dirX * moveSpeed)][(int)(posY)] == 0) posX -= dirX * moveSpeed;
             if(worldMap[(int)(posX)][(int)(posY - dirY * moveSpeed)] == 0) posY -= dirY * moveSpeed;
         }
-        
-        oldTime = time;
     }
     
     // Free up sprites
