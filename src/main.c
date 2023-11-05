@@ -102,6 +102,7 @@ void load_texture(const char* file, WallTexture* dest){
 int main(){
     Sprite* sprites = NULL;
     size_t numOfSprites = 12;
+    int* hitSprites;
     double zbuffer[SCREEN_WIDTH];
 
     int heldSprite = -1;
@@ -163,6 +164,8 @@ int main(){
     double oldTime = 0; //time of previous frame
 
     sprites = malloc(numOfSprites * sizeof(Sprite));
+    hitSprites = calloc(numOfSprites, sizeof(Sprite));
+    hitSprites[0] = 1;
     
     double initSpritePositions[][2] = {
         {8.5, 4.5},
@@ -181,6 +184,7 @@ int main(){
     
     // Initialise sprites
     for(int i = 0; i < numOfSprites; i++) {
+        sprites[i].origIndex = i;
         if (i < sizeof(initSpritePositions) / (sizeof(double)*2)) {
             sprites[i].pos.x = initSpritePositions[i][0];
             sprites[i].pos.y = initSpritePositions[i][1];
@@ -528,6 +532,29 @@ int main(){
         
         SDL_RenderPresent(state.rend);
         clearscreen();
+        
+        // Check which sprites the ball is hitting
+        // Find the ball sprite
+        Sprite* ballSprite = NULL;
+        for(int i = 0; i < numOfSprites; i++) {
+            if(sprites[i].origIndex == 0) {
+                ballSprite = &sprites[i];
+                break;
+            }
+        }
+        if (ballSprite == NULL) exit(2);
+        
+        for(int i = 0; i < numOfSprites; i++) {
+            // Skip the ball
+            if (sprites[i].origIndex == 0)
+                continue;
+            if( pow(sprites[i].pos.x - ballSprite->pos.x, 2) + pow(sprites[i].pos.y - ballSprite->pos.y, 2) < 0.5 ) {
+                if(hitSprites[sprites[i].origIndex] == 0) {
+                    hitSprites[sprites[i].origIndex] = 1;
+                    score += 1;
+                }
+            }
+        }
 
         SDL_Event e;
         while(SDL_PollEvent(&e)){

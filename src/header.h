@@ -44,5 +44,6 @@ typedef struct Sprite {
     SDL_Texture* texture;
     float vel;
     fvec2 dir;
+    int origIndex;
 } Sprite;
 #endif  // HEADER_H
