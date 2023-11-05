@@ -369,21 +369,18 @@ int main(){
                 sideDistY = (mapY + 1.0 - posY) * deltaDistY;
             }
 
-                  //perform DDA
+            //perform DDA
             while (hit == 0)
             {
                 //jump to next map square, either in x-direction, or in y-direction
-                if (sideDistX < sideDistY)
-                {
-                sideDistX += deltaDistX;
-                mapX += stepX;
-                side = 0;
-                }
-                else
-                {
-                sideDistY += deltaDistY;
-                mapY += stepY;
-                side = 1;
+                if (sideDistX < sideDistY) {
+                    sideDistX += deltaDistX;
+                    mapX += stepX;
+                    side = 0;
+                } else {
+                    sideDistY += deltaDistY;
+                    mapY += stepY;
+                    side = 1;
                 }
                 //Check if ray has hit a wall
                 if (worldMap[mapX][mapY] > 0) hit = 1;
@@ -492,7 +489,7 @@ int main(){
                     }
                 }
             }
-        spriteDists[i] = spriteDistance(sprites[i], posX, posY);
+            spriteDists[i] = spriteDistance(sprites[i], posX, posY);
         }
         if(delay>0)
             delay--;
