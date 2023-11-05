@@ -491,7 +491,9 @@ int main(){
                         }
                     } else {
                         // Put it down
+                        sprites[heldSprite].pos = (fvec2) {posX+0.1,posY+0.1};
                         heldSprite = -1;
+                        
                     }
                 }
             }
@@ -523,6 +525,7 @@ int main(){
             if(worldMap[(int)(posX - dirX * moveSpeed)][(int)(posY)] == 0) posX -= dirX * moveSpeed;
             if(worldMap[(int)(posX)][(int)(posY - dirY * moveSpeed)] == 0) posY -= dirY * moveSpeed;
         }
+
 
     }
     
