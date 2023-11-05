@@ -436,7 +436,7 @@ int main(){
         oldTime = time;
         time = SDL_GetTicks();
         double frameTime = (time - oldTime) / 1000.0; //frameTime is the time this frame has taken, in seconds
-    //speed modifiers
+        //speed modifiers
         double moveSpeed = frameTime * 5.0; //the constant value is in squares/second
         double rotSpeed = frameTime * 3.0; //the constant value is in radians/second
        
@@ -462,42 +462,31 @@ int main(){
                 max(0,sprites[i].vel);
 
                 for (int j = 0; j < numOfSprites; j++) {
-                if(j!=i){
-                    double d = spriteDistance(sprites[i],sprites[j].pos.x, sprites[j].pos.y);
-                    if (d <0.4) {
-                        if(sprites[i].mass == 1 && delay<=0){
-                            play_Sample("res/strike.wav",0);
-                            delay = 100;
+                    if(j!=i){
+                        double d = spriteDistance(sprites[i],sprites[j].pos.x, sprites[j].pos.y);
+                        if (d <0.4) {
+                            if(sprites[i].mass == 1 && delay<=0){
+                                play_Sample("res/strike.wav",0);
+                                delay = 100;
+                            }
+                            float v = (sprites[i].mass * sprites[i].vel) + 
+                            (sprites[j].mass * sprites[j].vel * sprites[i].mass) + sprites[i].mass;
+                            printf("velcoty after collison of %d and %d: %f\n",i,j,v);
+                            sprites[i].vel = v;
+                            sprites[j].vel = v;
+                            srand(SDL_GetTicks()<<j*217215);
+                            if(sprites[i].mass > sprites[j].mass){
+                                sprites[j].dir.x = sprites[i].dir.x + (0.5*((rand()%2)-1));
+                                sprites[j].dir.y = sprites[i].dir.y;
+                                sprites[j].vel = v+2;
+                                sprites[i].vel = (v/2)-0.2;
+
+                            }
                         }
-                        float v = (sprites[i].mass * sprites[i].vel) + 
-                        (sprites[j].mass * sprites[j].vel * sprites[i].mass) + sprites[i].mass;
-                        printf("velcoty after collison of %d and %d: %f\n",i,j,v);
-                        sprites[i].vel = v;
-                        sprites[j].vel = v;
-                        srand(SDL_GetTicks()<<j*217215);
-                        if(sprites[i].mass > sprites[j].mass){
-                            sprites[j].dir.x = sprites[i].dir.x + (0.5*((rand()%2)-1));
-                            sprites[j].dir.y = sprites[i].dir.y;
-                            sprites[j].vel = v+2;
-                            sprites[i].vel = (v/2)-0.2;
-
-                        }
-                       // else{
-                        //   sprites[i].dir.x = sprites[j].dir.x+1 ;
-                        //   sprites[i].dir.y = sprites[j].dir.y+1 ;
-                       
-                       // }
-                }
-
-
+                    }
                 }
             }
-
-        }
-
-          
-            spriteDists[i] = spriteDistance(sprites[i], posX, posY);
-        
+        spriteDists[i] = spriteDistance(sprites[i], posX, posY);
         }
         if(delay>0)
             delay--;
