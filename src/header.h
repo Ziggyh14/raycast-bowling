@@ -11,7 +11,7 @@
 
 #define FRICTION_VAR 0.002;
 #define BALL_MASS 1
-#define PIN_MASS 0.1
+#define PIN_MASS 0.15
 #define HER_MASS 0.5;
 
 #define max(a,b) ((a) > (b) ? (a) : (b))
