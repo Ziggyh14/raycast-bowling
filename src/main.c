@@ -646,13 +646,13 @@ int main(){
         SDL_Color colour = {0};
         char scoreStr[64] = {0};
         if (noClip) {
-            colour.r = 255; colour.g = 255; colour.b = 51;
+            colour.r = 90; colour.g = 15; colour.b = 115;
             snprintf(scoreStr, 63, "No clip active - use with care");
         } else if (posY >= BOUNDARY_LINE) {
-            colour.r = 232; colour.g = 23; colour.b = 51;
+            colour.r = 136; colour.g = 13; colour.b = 32;
             snprintf(scoreStr, 63, "You're over the line!");
         } else if (charge > 0.03) {
-            colour.r = 128; colour.g = 255; colour.b = 128;
+            colour.r = 22; colour.g = 140; colour.b = 15;
             snprintf(scoreStr, 63, "Charge: %.0f%%", min(100.0, charge / 0.5 * 100.0));
         } else {
             colour.r = 0; colour.g = 0; colour.b = 0;
