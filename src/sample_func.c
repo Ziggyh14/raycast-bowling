@@ -6,7 +6,7 @@ void init_Sample_Playback(){ //todo make init variables parameters
     
     Mix_OpenAudio(MIX_DEFAULT_FREQUENCY,MIX_DEFAULT_FORMAT,2,4096);
     Mix_AllocateChannels(DEFAULT_CHANNEL_NO+1); // Allocate channels + queue buffer
-    printf("Allocated channels %d\n", Mix_AllocateChannels(DEFAULT_CHANNEL_NO+1));
+    //printf("Allocated channels %d\n", Mix_AllocateChannels(DEFAULT_CHANNEL_NO+1));
     queue_Count = 0;
     Mix_ReserveChannels(1); // Reserve a buffer channel for a possible queue to go
 }

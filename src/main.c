@@ -707,7 +707,6 @@ int main(){
             
             if(isKeyDown(e)) {
                 if(getKeyPressed(e) == SDLK_e && numOfSprites > 0) {
-                    printf("E is pressed\n");
                     if (heldSprite == -1) {
                         // Not holding anything
                         // Get the closest sprite
