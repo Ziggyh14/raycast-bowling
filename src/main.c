@@ -20,8 +20,8 @@ int worldMap[10][20]=
   {1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
   {1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
   {1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
-  {1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
-  {1,0,0,0,0,0,0,0,0,1,4,4,4,4,4,4,4,4,4,1},
+  {6,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
+  {6,0,0,0,0,0,0,0,0,1,4,4,4,4,4,4,4,4,4,1},
   {1,1,1,0,0,0,1,0,0,1,0,0,0,0,0,0,0,0,0,0},
   {3,3,3,5,5,5,5,3,3,3,0,0,0,0,0,0,0,0,0,0},
 };
@@ -139,7 +139,7 @@ int main(){
 
     play_Sample("res/jazz.wav",0);
 
-    size_t numOfTextures = 7;
+    size_t numOfTextures = 8;
     WallTexture textures[numOfTextures];
 
     load_texture("res/floor.png",&textures[0]);
@@ -149,6 +149,7 @@ int main(){
     load_texture("res/bowling.png",&textures[4]);
     load_texture("res/wallgutter.png",&textures[5]);
     load_texture("res/wallrack.png",&textures[6]);
+    load_texture("res/shoes.png",&textures[7]);
     
     double posX = 4.5, posY = 4.5;  //x and y start position
     double dirX = 1,dirY = 0; //initial direction vector
@@ -189,9 +190,20 @@ int main(){
         sprites[i].dir = (fvec2){0,0};
         sprites[i].vel = 0;
         char* imageFilePath;
-        if (i == 0) imageFilePath = "res/ball.png";
-        else if (i == 1) imageFilePath = "res/her.png";
-        else imageFilePath = "res/pin.png";
+        float mass = 0;
+        if (i == 0){
+            imageFilePath = "res/ball.png";
+            mass = BALL_MASS;
+        }
+        else if (i == 1){ 
+            imageFilePath = "res/her.png";
+            mass = HER_MASS;
+        }
+        else {
+            imageFilePath = "res/pin.png";
+            mass = PIN_MASS;
+        }
+        sprites[i].mass = mass;
         sprites[i].texture = IMG_LoadTexture(state.rend, imageFilePath);
     }
     while(1){
@@ -400,12 +412,34 @@ int main(){
         double spriteDists[numOfSprites];
         for(int i = 0; i < numOfSprites; i++) {
             if(sprites[i].vel > 0){
-                sprites[i].pos = (fvec2) {sprites[i].pos.x + (sprites[i].dir.x * sprites[i].vel),
-                                          sprites[i].pos.y + (sprites[i].dir.y * sprites[i].vel)};
+                sprites[i].pos = (fvec2) {sprites[i].pos.x + ((sprites[i].dir.x * sprites[i].vel)*sprites[i].mass),
+                                          sprites[i].pos.y + ((sprites[i].dir.y * sprites[i].vel)*sprites[i].mass)};
                 sprites[i].vel-=FRICTION_VAR;
                 max(0,sprites[i].vel);
+
+                for (int j = 0; j < numOfSprites; j++) {
+                if(j!=i){
+                    double d = spriteDistance(sprites[i],sprites[j].pos.x, sprites[j].pos.y);
+                    if (d <0.3) {
+                        float v = (sprites[i].mass * sprites[i].vel) + 
+                        (sprites[j].mass * sprites[j].vel * sprites[i].mass) + sprites[i].mass;
+                        printf("velcoty after collison of %d and %d: %f\n",i,j,v);
+                        sprites[i].vel = v;
+                        sprites[j].vel = v;
+                        if(sprites[i].mass > sprites[j].mass)
+                            sprites[j].dir = sprites[i].dir;
+                        else
+                            sprites[i].dir = sprites[j].dir;
+                    }
+                }
+
+
+                }
             }
+
+          
             spriteDists[i] = spriteDistance(sprites[i], posX, posY);
+            
         }
         
         // Bubble sort the sprites
@@ -597,6 +631,7 @@ int main(){
         }
 
 
+    
     }
     
     // Free up sprites
@@ -618,4 +653,5 @@ int main(){
     SDL_DestroyWindow(state.window);
     
     return 0;
+
 }

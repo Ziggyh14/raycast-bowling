@@ -10,6 +10,10 @@
 #define TEXTURE_HEIGHT 64
 
 #define FRICTION_VAR 0.002;
+#define BALL_MASS 1
+#define PIN_MASS 0.1
+#define HER_MASS 0.5;
+
 #define max(a,b) ((a) > (b) ? (a) : (b))
 #define min(a,b) ((a) < (b) ? (a) : (b))
 
@@ -44,5 +48,6 @@ typedef struct Sprite {
     SDL_Texture* texture;
     float vel;
     fvec2 dir;
+    float mass;
 } Sprite;
 #endif  // HEADER_H
