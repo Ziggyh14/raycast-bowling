@@ -52,7 +52,7 @@ struct {
     SDL_Surface* surface;
     SDL_Renderer* rend;
     SDL_Texture* texture;
-    ui32 pixels[(SCREEN_WIDTH*SCREEN_HEIGHT)*sizeof(int)];
+    ui32 pixels[(SCREEN_WIDTH*SCREEN_HEIGHT)];
 } state;
 
 void verline(int x, int y1, int y2,ui32 color){
@@ -62,8 +62,8 @@ void verline(int x, int y1, int y2,ui32 color){
 }
 
 void clearscreen(){
-    int* temp[SCREEN_WIDTH*SCREEN_HEIGHT] = {0};
-    memcpy(state.pixels,temp,SCREEN_WIDTH*SCREEN_HEIGHT*sizeof(int));
+    ui32 temp[SCREEN_WIDTH*SCREEN_HEIGHT] = {0};
+    memcpy(state.pixels,temp,SCREEN_WIDTH*SCREEN_HEIGHT*sizeof(ui32));
 }
 
 int isKeyDown(SDL_Event event){
@@ -675,8 +675,8 @@ int main(){
         for(int i = 0; i < numOfSprites; i++) {
             if(sprites[i].origIndex == 0) {
                 ballSprite = &sprites[i];
-                if(ballSprite->pos.y > 20 || ballSprite->pos.y <0||
-                    ballSprite->pos.x > 20 || ballSprite->pos.x<0){
+                if(ballSprite->pos.y > 20.5 || ballSprite->pos.y <0||
+                    ballSprite->pos.x > 20.5 || ballSprite->pos.x<0){
                    ballSprite->pos = (fvec2) {9.5,5.5};
                    ballSprite->vel = 0;
                 }
@@ -690,7 +690,7 @@ int main(){
             if (sprites[i].origIndex == 0)
                 continue;
             //if( pow(sprites[i].pos.x - ballSprite->pos.x, 2) + pow(sprites[i].pos.y - ballSprite->pos.y, 2) < 0.5 ) {
-            if (sprites[i].pos.y > 20) {
+            if (sprites[i].pos.y > 19.5) {
                 if(hitSprites[sprites[i].origIndex] == 0) {
                     hitSprites[sprites[i].origIndex] = 1;
                     score += 1;
